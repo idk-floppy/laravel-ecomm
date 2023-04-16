@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->string('user');
+            $table->string('user')->nullable()->default('Guest');
             $table->string('status');
             $table->timestamps();
         });

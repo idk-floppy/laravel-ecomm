@@ -10,8 +10,14 @@ class Order extends Model
 {
     use HasFactory;
 
-    public function Items()
+    public function items()
     {
-        return $this->hasMany(Product::class);
+        return $this->hasMany(OrderItems::class, 'order_id', 'id');
+    }
+
+    public function summary()
+    {
+        $summary = collect($this->items)->sum('subtotal');
+        print($summary);
     }
 }
