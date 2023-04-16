@@ -6,8 +6,8 @@ export default defineConfig({
     plugins: [
         laravel({
             input: [
-                'resources/sass/app.scss',
                 'resources/js/app.js',
+                'resources/css/app.css'
             ],
             refresh: true,
         }),
@@ -15,14 +15,14 @@ export default defineConfig({
             template: {
                 transformAssetUrls: {
                     base: null,
-                    includeAbsolute: false,
-                },
-            },
-        }),
+                    includeAbsolute: false
+                }
+            }
+        })
     ],
     resolve: {
         alias: {
-            vue: 'vue/dist/vue.esm-bundler.js',
-        },
-    },
+            vue: 'vue/dist/vue.esm-bundler.js'
+        }
+    }
 });

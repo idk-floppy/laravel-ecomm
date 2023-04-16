@@ -11,7 +11,9 @@
 
 <body>
     <p>helo</p>
-    <div id="app"></div>
+    <div id="app">
+        <products-grid></products-grid>
+    </div>
 </body>
 
 </html>
