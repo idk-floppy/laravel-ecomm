@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\OrderStatuses;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -18,9 +19,10 @@ class OrderFactory extends Factory
     public function definition(): array
     {
         $user = User::inRandomOrder()->first();
+        $status = OrderStatuses::inRandomOrdeR()->first();
         return [
             'user' => $user,
-            'status' => 'none',
+            'status' => $status,
         ];
     }
 }
