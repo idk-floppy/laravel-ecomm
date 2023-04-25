@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ProductResource;
 
@@ -14,7 +15,10 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::paginate(12);
+        $search = request('search');
+        $products = Product::query()->when($search, function ($query, $search){
+            return $query->where('name', 'like', "%".$search."%")->orWhere('description', 'like', "%".$search."%");
+        })->paginate(12);
 
         return ProductResource::collection($products);
     }
@@ -44,7 +48,7 @@ class ProductController extends Controller
     public function update(Request $request, string $id)
     {
         $data = $request->all();
-        DB::transaction(function () use ($data) {
+        DB::transaction(function () use ($data, $id) {
             $product = Product::findOrFail($id)->update($data);
         });
     }
@@ -54,7 +58,7 @@ class ProductController extends Controller
      */
     public function destroy(string $id)
     {
-        DB::transaction(function () use ($data) {
+        DB::transaction(function () use ($id) {
             Product::findOrFail($id)->delete();
         });
     }

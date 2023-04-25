@@ -1,52 +1,82 @@
 <template>
-    <div class="container">
-      <div class="row">
-        <div class="col-md-4" v-for="product in products" :key="product.id">
-          <div class="card mb-4">
-            <!-- <img :src="product.image" class="card-img-top" alt="..."> -->
-            <div class="card-body">
-              <h5 class="card-title">{{ product.name }}</h5>
-              <p class="card-text">{{ product.description }}</p>
-              <a href="#" class="btn btn-primary">Kosárba</a>
+<div class="container my-5">
+    <label for="search">Keresés:</label>
+    <input id="search" v-model="searchTerm" @input="getFilteredProducts">
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        <div class="col-md-4 mb-3" v-for="product in filteredProducts" :key="product.id" :product="product">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ product.name }}</h5>
+                    <p class="card-text">{{ product.description }}</p>
+                    <p class="card-text">{{ product.price }}</p>
+                    <a class="btn btn-primary" @click="buy(product)">Buy</a>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
-      <nav>
-      <ul class="pagination">
-        <li class="page-item" :class="{ 'disabled': !links.prev }">
-          <a class="page-link" @click.prevent="getProducts(links.prev)" href="#">Előző</a>
-        </li>
-        <li class="page-item">
-            <span class="page-link">{{ meta.current_page }}/{{ meta.last_page }}</span>
-        </li>
-        <li class="page-item" :class="{ 'disabled': !links.next }">
-          <a class="page-link" @click.prevent="getProducts(links.next)" href="#">Következő</a>
-        </li>
-      </ul>
-    </nav>
     </div>
+
+    <nav>
+        <p v-if="filteredProducts.length < 1">Nincs találat...</p>
+            <ul class="pagination justify-content-center mt-5" v-else>
+            <li class="page-item" :class="{ 'disabled': !links.prev }">
+            <a class="page-link" @click.prevent="getProducts(links.prev)" href="#">Előző</a>
+            </li>
+            <li class="page-item">
+                <span class="page-link">{{ meta.current_page }}/{{ meta.last_page }}</span>
+            </li>
+            <li class="page-item" :class="{ 'disabled': !links.next }">
+            <a class="page-link" @click.prevent="getProducts(links.next)" href="#">Következő</a>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+<!--
+    <nav>
+
+</nav>
+</div> -->
 </template>
 <script>
 export default {
-    data(){
+    emits: ['buy'],
+    data() {
         return {
             products: [],
             meta: {},
-            links: {}
+            links: {},
+            searchTerm: '',
         }
     },
-    methods: {
-        getProducts(url = '/api/products') {
-            axios.get(url)
-                .then(response => {
-                this.products = response.data.data;
-                this.meta = response.data.meta;
-                this.links = response.data.links;
-        });
+    computed: {
+        filteredProducts() {
+            return this.products.filter((product) => {
+                return product.name.toLowerCase().includes(this.searchTerm.toLowerCase()) || product.description.toLowerCase().includes(this.searchTerm.toLowerCase());
+            });
         },
     },
-    mounted(){
+    methods: {
+        getProducts(url = '/api/products', searchTerm = '') {
+            axios.get(url, {
+                params: {
+                    search: searchTerm,
+                }
+            })
+                .then(response => {
+                    this.products = response.data.data;
+                    this.meta = response.data.meta;
+                    this.links = response.data.links;
+                });
+        },
+        getFilteredProducts() {
+            this.getProducts("/api/products", this.searchTerm);
+        },
+        buy(product) {
+            this.$emit('buy', product);
+            console.log("buy event triggered on produt "+product.id);
+        },
+    },
+    mounted() {
         this.getProducts();
     },
 }
