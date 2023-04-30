@@ -15,9 +15,12 @@
         </div>
     </div>
 
+    <div v-if="filteredProducts.length < 1">
+        <br>
+        <p>Nincs találat...</p>
+    </div>
     <nav>
-        <p v-if="filteredProducts.length < 1">Nincs találat...</p>
-            <ul class="pagination justify-content-center mt-5" v-else>
+            <ul class="pagination justify-content-center mt-5">
             <li class="page-item" :class="{ 'disabled': !links.prev }">
             <a class="page-link" @click.prevent="getProducts(links.prev)" href="#">Előző</a>
             </li>
@@ -30,12 +33,6 @@
         </ul>
     </nav>
 </div>
-
-<!--
-    <nav>
-
-</nav>
-</div> -->
 </template>
 <script>
 export default {
@@ -72,8 +69,7 @@ export default {
             this.getProducts("/api/products", this.searchTerm);
         },
         buy(product) {
-            this.$emit('buy', product);
-            console.log("buy event triggered on produt "+product.id);
+            this.emitter.emit('buy', product);
         },
     },
     mounted() {
