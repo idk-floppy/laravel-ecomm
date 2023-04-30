@@ -5,7 +5,6 @@ import Cart from './components/Cart.vue';
 import NavLink from './components/NavLink.vue';
 import Navbar from './components/Navbar.vue';
 import mitt from 'mitt';
-import { store } from './store';
 
 const emitter = mitt();
 emitter.on('buy', e => {
