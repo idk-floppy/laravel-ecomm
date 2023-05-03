@@ -1,0 +1,12 @@
+// Variables
+@import 'variables';
+
+// Bootstrap
+@import 'bootstrap/scss/bootstrap';
+
+*{
+    z-index: 1;
+}
+.navbar{
+    z-index: 1000;
+}

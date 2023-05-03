@@ -1,15 +1,18 @@
 <template>
-<div class="container my-5">
-    <label for="search">Keresés:</label>
-    <input id="search" v-model="searchTerm" @input="getFilteredProducts">
-    <div class="row row-cols-1 row-cols-md-3 g-4">
+<div class="container">
+    <div class="row">
+            <div class="input-group">
+                <input id="search" v-model="searchTerm" @input="getFilteredProducts" class="w-100 card mb-3 p-2" placeholder="Keresés">
+            </div>
+    </div>
+    <div class="row row-cols-1 row-cols-md-3 g-2">
         <div class="col-md-4 mb-3" v-for="product in filteredProducts" :key="product.id" :product="product">
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">{{ product.name }}</h5>
                     <p class="card-text">{{ product.description }}</p>
-                    <p class="card-text">{{ product.price }}</p>
-                    <a class="btn btn-primary" @click="buy(product)">Buy</a>
+                    <p class="card-text">{{ product.price }} Ft</p>
+                    <a class="btn btn-primary text-uppercase font-weight-bold" @click="buy(product)">add to cart</a>
                 </div>
             </div>
         </div>

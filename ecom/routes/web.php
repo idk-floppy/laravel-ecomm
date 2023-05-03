@@ -2,6 +2,7 @@
 
 use App\Models\Order;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HomeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,9 +16,13 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
-})->name('home');
+    return view('products');
+})->name('products');
 
-Route::get('/order', function () {
-    return view('order');
-})->name('order');
+Route::get('/cart', function () {
+    return view('cart');
+})->name('cart');
+
+Auth::routes();
+
+Route::get('/home', [HomeController::class, 'index'])->name('home');
