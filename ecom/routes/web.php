@@ -1,12 +1,13 @@
 <?php
 
 use App\Models\Order;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\HomeController;
 use App\Models\CartData;
 use App\Models\CartItems;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Api\CartController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,3 +31,7 @@ Route::get('/cart', function () {
 Auth::routes();
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
+
+Route::group(['middleware' => ['web'], 'controller' => CartController::class], function () {
+    Route::post('cart/add', 'addItem');
+});

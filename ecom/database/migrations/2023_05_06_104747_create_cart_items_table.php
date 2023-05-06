@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('cart_data_id');
             $table->bigInteger('product_id');
+            $table->integer('qty');
             $table->json('product_data');
         });
     }

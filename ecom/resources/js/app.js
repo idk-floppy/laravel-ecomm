@@ -22,8 +22,6 @@ toastr.options = {
 const emitter = mitt();
 window.mitt = emitter;
 
-window.csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-
 const app = createApp({
     components: {
         'products-grid': ProductsGrid,
@@ -49,11 +47,10 @@ const app = createApp({
         this.emitter.off('buy', this.buy);
     },
     methods: {
-        buy(item) {
-            axios.post(
-                'api/cart/add',
+        async buy(item) {
+            await axios.post(
+                'cart/add',
                 {
-                    product_id: item.id,
                     product_data: JSON.stringify(item),
                 }).then(
                     response => {

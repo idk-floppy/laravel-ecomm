@@ -13,18 +13,23 @@ class CartController extends Controller
     public function addItem(Request $request)
     {
         try {
-            // $session_id = $request->session()->getId();
-            Log::alert($request->session()->getId());
-            // $cart_data = CartData::firstOrCreate(['session_id' => $session_id]);
-            // $cart_item = new CartItems([
-            //     'product_id' => $request->input('product_id'),
-            //     'product_data' => $request->input('product_data'),
-            // ]);
-            // $cart_data->items()->save($cart_item);
-            // return response()->json(['success' => true]);
+            $sessionId = $request->session()->getId();
+            $cartData = CartData::firstOrCreate(['session_id' => $sessionId]);
+            $cartItem = $cartData->items()->firstOrCreate(
+                [
+                    'product_id' => json_decode($request->input('product_data'))->id
+                ],
+                [
+                    'qty' => 0,
+                    'product_data' => $request->input('product_data')
+                ]
+            );
+            $cartItem->qty++;
+            $cartItem->save();
+            return response()->json(['success' => true]);
         } catch (\Throwable $th) {
             report($th);
-            // return response()->json(['success' => false]);
+            return response()->json(['success' => false]);
         }
     }
 }

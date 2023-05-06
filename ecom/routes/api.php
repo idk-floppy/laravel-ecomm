@@ -21,7 +21,3 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::resource('products', ProductController::class);
-
-Route::group(['middleware' => ['web'], 'controller' => CartController::class], function () {
-    Route::post('cart/add', 'addItem');
-});
