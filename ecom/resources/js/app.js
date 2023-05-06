@@ -22,6 +22,8 @@ toastr.options = {
 const emitter = mitt();
 window.mitt = emitter;
 
+window.csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
 const app = createApp({
     components: {
         'products-grid': ProductsGrid,
@@ -33,26 +35,36 @@ const app = createApp({
     },
     data() {
         return {
-            cartItems: JSON.parse(localStorage.getItem('cart')) || [],
+            cartItems: [],
         };
     },
     created() {
         this.emitter.on('buy', this.buy);
         this.emitter.on('clearCart', this.clearCart);
-        window.addEventListener('beforeunload', this.saveCartToLocalStorage);
+    },
+    mounted() {
+        console.log(this.cartItems);
     },
     beforeUnmount() {
         this.emitter.off('buy', this.buy);
-        window.removeEventListener('beforeunload', this.saveCartToLocalStorage);
-        this.saveCartToLocalStorage();
     },
     methods: {
         buy(item) {
-            this.cartItems.push(item);
-            toastr.success(item.name + ' added to cart!', 'Success');
+            axios.post(
+                'api/cart/add',
+                {
+                    product_id: item.id,
+                    product_data: JSON.stringify(item),
+                }).then(
+                    response => {
+                        console.log(response);
+                        toastr.success(item.name + ' added to cart!', 'Success');
+                    }).catch(error => {
+                        console.log(error);
+                        toastr.error('Something went wrong!', 'Error');
+                    });
         },
         removeItem(index) {
-            this.cartItems.splice(index, 1);
             toastr.success('Item removed from cart', 'Success');
         },
         clearCart() {
@@ -61,14 +73,14 @@ const app = createApp({
                 showCancelButton: true,
                 confirmButtonText: 'Delete',
                 denyButtonText: `Cancel`,
-              }).then((result) => {
+            }).then((result) => {
                 if (result.isConfirmed) {
                     this.cartItems = [];
                     Swal.fire('Cart deleted!', '', 'success').then(() => {
-                    window.location.href = "/";
-                });
+                        window.location.href = "/";
+                    });
                 }
-              })
+            })
         },
         saveCartToLocalStorage() {
             localStorage.setItem('cart', JSON.stringify(this.cartItems));

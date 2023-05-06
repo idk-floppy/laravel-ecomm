@@ -3,6 +3,10 @@
 use App\Models\Order;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
+use App\Models\CartData;
+use App\Models\CartItems;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
