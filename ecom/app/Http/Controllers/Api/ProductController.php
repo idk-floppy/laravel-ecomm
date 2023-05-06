@@ -16,8 +16,8 @@ class ProductController extends Controller
     public function index()
     {
         $search = request('search');
-        $products = Product::query()->when($search, function ($query, $search){
-            return $query->where('name', 'like', "%".$search."%")->orWhere('description', 'like', "%".$search."%");
+        $products = Product::query()->when($search, function ($query, $search) {
+            return $query->where('name', 'like', "%" . $search . "%");
         })->paginate(12);
 
         return ProductResource::collection($products);

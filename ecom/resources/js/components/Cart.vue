@@ -20,7 +20,7 @@
                 </td>
                     <td></td>
                 <td>
-                    <button @click="$parent.clearCart" class="btn btn-danger w-100">Clear cart</button>
+                    <button @click="clearCartTrigger" class="btn btn-danger w-100">Clear cart</button>
                 </td>
             </tr>
         </tbody>
@@ -32,5 +32,12 @@
 </template>
 
 <script>
-export default {};
+export default {
+    emits: ['clearCart'],
+    methods: {
+        clearCartTrigger() {
+            window.mitt.emit('clearCart');
+        },
+    }
+};
 </script>

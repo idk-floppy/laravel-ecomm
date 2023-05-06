@@ -2,15 +2,14 @@
 <div class="container">
     <div class="row">
             <div class="input-group">
-                <input id="search" v-model="searchTerm" @input="getFilteredProducts" class="w-100 card mb-3 p-2" placeholder="Keresés">
+                <input id="search" v-model="searchTerm" @input="filterProducts" class="w-100 card mb-3 p-2" placeholder="Keresés">
             </div>
     </div>
     <div class="row row-cols-1 row-cols-md-3 g-2">
-        <div class="col-md-4 mb-3" v-for="product in filteredProducts" :key="product.id" :product="product">
+        <div class="col-md-4 mb-3" v-for="product in products" :key="product.id" :product="product">
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">{{ product.name }}</h5>
-                    <p class="card-text">{{ product.description }}</p>
                     <p class="card-text">{{ product.price }} Ft</p>
                     <a class="btn btn-primary text-uppercase font-weight-bold" @click="buy(product)">add to cart</a>
                 </div>
@@ -18,20 +17,20 @@
         </div>
     </div>
 
-    <div v-if="filteredProducts.length < 1">
+    <div v-if="products.length < 1">
         <br>
-        <p>Nincs találat...</p>
+        <p>No results...</p>
     </div>
     <nav>
             <ul class="pagination justify-content-center mt-5">
             <li class="page-item" :class="{ 'disabled': !links.prev }">
-            <a class="page-link" @click.prevent="getProducts(links.prev)" href="#">Előző</a>
+            <a class="page-link" @click.prevent="getProducts(searchTerm, links.prev)" href="#">Previous</a>
             </li>
             <li class="page-item">
                 <span class="page-link">{{ meta.current_page }}/{{ meta.last_page }}</span>
             </li>
             <li class="page-item" :class="{ 'disabled': !links.next }">
-            <a class="page-link" @click.prevent="getProducts(links.next)" href="#">Következő</a>
+            <a class="page-link" @click.prevent="getProducts(searchTerm, links.next)" href="#">Next</a>
             </li>
         </ul>
     </nav>
@@ -48,16 +47,9 @@ export default {
             searchTerm: '',
         }
     },
-    computed: {
-        filteredProducts() {
-            return this.products.filter((product) => {
-                return product.name.toLowerCase().includes(this.searchTerm.toLowerCase()) || product.description.toLowerCase().includes(this.searchTerm.toLowerCase());
-            });
-        },
-    },
     methods: {
-        getProducts(url = '/api/products', searchTerm = '') {
-            axios.get(url, {
+        async getProducts(searchTerm = '', url = '/api/products') {
+            await axios.get(url, {
                 params: {
                     search: searchTerm,
                 }
@@ -68,11 +60,11 @@ export default {
                     this.links = response.data.links;
                 });
         },
-        getFilteredProducts() {
-            this.getProducts("/api/products", this.searchTerm);
+        filterProducts() {
+            return this.getProducts(this.searchTerm);
         },
         buy(product) {
-            this.emitter.emit('buy', product);
+            window.mitt.emit('buy', product);
         },
     },
     mounted() {

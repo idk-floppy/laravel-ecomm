@@ -20,9 +20,7 @@ toastr.options = {
 };
 
 const emitter = mitt();
-emitter.on('buy', e => {
-    console.log("buy triggered, got in appjs");
-});
+window.mitt = emitter;
 
 const app = createApp({
     components: {
@@ -40,6 +38,7 @@ const app = createApp({
     },
     created() {
         this.emitter.on('buy', this.buy);
+        this.emitter.on('clearCart', this.clearCart);
         window.addEventListener('beforeunload', this.saveCartToLocalStorage);
     },
     beforeUnmount() {
@@ -57,14 +56,19 @@ const app = createApp({
             toastr.success('Item removed from cart', 'Success');
         },
         clearCart() {
-            this.cartItems = [];
-            Swal.fire(
-                'Success!',
-                'Cart cleared!',
-                'success'
-            ).then(() => {
-                window.location.href = "/";
-            });
+            Swal.fire({
+                title: 'Do you want to empty your cart?',
+                showCancelButton: true,
+                confirmButtonText: 'Delete',
+                denyButtonText: `Cancel`,
+              }).then((result) => {
+                if (result.isConfirmed) {
+                    this.cartItems = [];
+                    Swal.fire('Cart deleted!', '', 'success').then(() => {
+                    window.location.href = "/";
+                });
+                }
+              })
         },
         saveCartToLocalStorage() {
             localStorage.setItem('cart', JSON.stringify(this.cartItems));
