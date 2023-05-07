@@ -14,7 +14,7 @@
         <nav class="navbar position-sticky top-0 navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/') }}">
-                    {{ config('app.name', 'Laravel') }}
+                    {{ config('app.name', 'Laravel') }} session {{ session()->getId() }}
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
@@ -30,7 +30,7 @@
 
                     <!-- Right Side Of Navbar -->
                     <ul class="navbar-nav ms-auto">
-                        <navlink url="{{ route('cart') }}">Cart</navlink>
+                        <navitem url="{{ route('cart') }}">Cart</navitem>
                         <!-- Authentication Links -->
                         @guest
                             @if (Route::has('login'))

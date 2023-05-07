@@ -11,7 +11,7 @@ class CartData extends Model
     use HasFactory;
     public $timestamps = false;
 
-    public $fillable = ['session_id'];
+    public $fillable = ['user_id', 'session_id'];
 
     public function items()
     {

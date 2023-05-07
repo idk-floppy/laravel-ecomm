@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('cart_data', function (Blueprint $table) {
             $table->id();
-            $table->string('session_id');
+            $table->bigInteger('user_id')->nullable();
+            $table->string('session_id')->nullable();
         });
     }
 

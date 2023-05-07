@@ -1,13 +1,15 @@
 import './bootstrap';
-import { createApp } from 'vue';
+import { createApp, defineAsyncComponent } from 'vue';
 import ProductsGrid from './components/ProductsGrid.vue';
-import Cart from './components/Cart.vue';
-import NavLink from './components/NavLink.vue';
-import Navbar from './components/Navbar.vue';
+// import Cart from './components/Cart.vue';
+const Cart = defineAsyncComponent(() => import('./components/Cart.vue'));
 import NavItem from './components/NavItem.vue';
+import Navbar from './components/Navbar.vue';
 import mitt from 'mitt';
 
-import Swal from 'sweetalert2';
+import VueSweetalert2 from 'vue-sweetalert2';
+import 'sweetalert2/dist/sweetalert2.min.css';
+
 import toastr from 'toastr';
 import 'toastr/build/toastr.css'
 toastr.options = {
@@ -25,9 +27,8 @@ const app = createApp({
     components: {
         'products-grid': ProductsGrid,
         'cart': Cart,
-        'navlink': NavLink,
-        'navbar': Navbar,
         'navitem': NavItem,
+        'navbar': Navbar,
     },
     data() {
         return {
@@ -52,8 +53,12 @@ const app = createApp({
                     product_data: JSON.stringify(item),
                 }).then(
                     response => {
-                        console.log(response);
-                        toastr.success(item.name + ' added to cart!', 'Success');
+                        console.log(response.data.success);
+                        if (response.data.success) {
+                            toastr.success(item.name + ' added to cart!', 'Success');
+                        } else {
+                            toastr.error('Something went wrong!', 'Failure');
+                        }
                     }).catch(error => {
                         console.log(error);
                         toastr.error('Something went wrong!', 'Error');
@@ -72,4 +77,5 @@ const app = createApp({
 
 app.config.globalProperties.emitter = emitter;
 
+app.use(VueSweetalert2);
 app.mount('#app');
