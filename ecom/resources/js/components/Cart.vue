@@ -1,26 +1,27 @@
 <template>
   <div>
-    <table class="table" v-if="$parent.cartItemsCount > 0">
+    <table class="table" v-if="this.items.length > 0">
         <thead>
             <tr>
                 <th>Product</th>
+                <th>Quantity</th>
                 <th>Price</th>
                 <th></th>
             </tr>
         </thead>
         <tbody>
-            <tr v-for="(item, index) in $parent.cartItems" :key="index">
-            <td>{{ item.name }}</td>
-            <td>{{ item.price }} Ft</td>
+            <tr v-for="(item, index) in this.items" :key="index">
+            <td>{{ JSON.parse(item.product_data).name }}</td>
+            <td>{{ item.qty }}</td>
+            <td>{{ formatPrice((JSON.parse(item.product_data).price*item.qty)) }}</td>
             <td><button @click="$parent.removeItem(index)" class="btn btn-danger w-100">Remove</button></td>
             </tr>
             <tr>
                 <td>
-                    Total: {{ $parent.cartTotalPrice }} Ft
+                    Total: {{ true }} Ft
                 </td>
                     <td></td>
                 <td>
-                    <button @click="clearCartTrigger" class="btn btn-danger w-100">Clear cart</button>
                 </td>
             </tr>
         </tbody>
@@ -32,12 +33,26 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
-    emits: ['clearCart'],
+    data(){
+        return {
+            items: [],
+        }
+    },
     methods: {
-        clearCartTrigger() {
-            window.mitt.emit('clearCart');
+        async getItems(){
+            await axios.get('cart/get').then( response =>{
+                this.items = response['data']['items'];
+            });
         },
+        formatPrice(price) {
+            return price.toLocaleString('hu-HU')+" Ft";
+        },
+    },
+    async mounted() {
+        await this.getItems();
     }
 };
 </script>

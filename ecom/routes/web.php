@@ -34,4 +34,5 @@ Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 Route::group(['middleware' => ['web'], 'controller' => CartController::class], function () {
     Route::post('cart/add', 'addItem');
+    Route::get('cart/get', 'getItems');
 });

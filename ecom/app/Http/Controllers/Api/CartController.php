@@ -32,4 +32,9 @@ class CartController extends Controller
             return response()->json(['success' => false]);
         }
     }
+
+    public function getItems(Request $request)
+    {
+        return CartData::query()->where('session_id', $request->session()->getId())->with('items')->first();
+    }
 }

@@ -19,11 +19,11 @@ class DatabaseSeeder extends Seeder
     {
         \App\Models\User::factory(1)->create();
 
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Admin',
-        //     'email' => 'admin@local',
-        //     'password' => Hash::make('admin123'),
-        // ]);
+        \App\Models\User::factory()->create([
+            'name' => 'Admin',
+            'email' => 'admin@local',
+            'password' => Hash::make('admin123'),
+        ]);
         $defaultOrderStatuses = [
             ['id' => 1, 'text' => 'SUBMITTED'],
             ['id' => 2, 'text' => 'CANCELLED'],
