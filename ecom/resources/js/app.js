@@ -10,15 +10,8 @@ import mitt from 'mitt';
 import VueSweetalert2 from 'vue-sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
 
-import toastr from 'toastr';
-import 'toastr/build/toastr.css'
-toastr.options = {
-    closeButton: true,
-    progressBar: true,
-    positionClass: 'toast-top-right',
-    timeOut: 3000,
-    extendedTimeOut: 2000,
-};
+import ToastPlugin from 'vue-toast-notification';
+import 'vue-toast-notification/dist/theme-bootstrap.css';
 
 const emitter = mitt();
 window.mitt = emitter;
@@ -46,22 +39,22 @@ const app = createApp({
         this.emitter.off('buy', this.buy);
     },
     methods: {
-        async buy(item) {
+        async buy(item, method = "add") {
             await axios.post(
                 'cart/add',
                 {
                     product_data: JSON.stringify(item),
+                    method: method,
                 }).then(
                     response => {
                         console.log(response.data.success);
                         if (response.data.success) {
-                            toastr.success(item.name + ' added to cart!', 'Success');
+                            this.$toast.success(item.name+" added to cart");
                         } else {
-                            toastr.error('Something went wrong!', 'Failure');
+                            this.$toast.error("Something went wrong!");
                         }
                     }).catch(error => {
-                        console.log(error);
-                        toastr.error('Something went wrong!', 'Error');
+                        this.$toast.error("Something went wrong!");
                     });
         },
     },
@@ -78,4 +71,8 @@ const app = createApp({
 app.config.globalProperties.emitter = emitter;
 
 app.use(VueSweetalert2);
+app.use(ToastPlugin, {
+    position: 'top-right',
+    duration: 3000,
+});
 app.mount('#app');

@@ -28,6 +28,10 @@ Route::get('/cart', function () {
     return view('cart');
 })->name('cart');
 
+Route::get('/profile', function () {
+    return view('auth\profile');
+})->name('profile');
+
 Auth::routes();
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');

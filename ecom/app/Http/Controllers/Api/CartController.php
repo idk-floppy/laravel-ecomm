@@ -11,20 +11,30 @@ use App\Http\Controllers\Controller;
 
 class CartController extends Controller
 {
+
     public function addItem(Request $request)
     {
         try {
             $user = $request->user();
-            Log::info($user);
+            $method = $request->input('method');
             $sessionId = $request->session()->getId();
+            $quantity = $request->filled('qty') ? $request->qty : 1;
 
-            DB::transaction(function () use ($request, $sessionId, $user) {
-                if ($user) {
-                    $cartData = CartData::firstOrCreate(['user_id' => $user->id]);
-                } else {
-                    $cartData = CartData::firstOrCreate(['session_id' => $sessionId]);
-                }
+            if ($user) {
+                $cartData = CartData::firstOrCreate(['user_id' => $user->id]);
+            } else {
+                $cartData = CartData::firstOrCreate(['session_id' => $sessionId]);
+            }
 
+            if ($quantity < 1) {
+                CartItems::where([
+                    'cart_data_id' => $cartData->id,
+                    'product_id' => json_decode($request->input('product_data'))->id,
+                ])->delete();
+                return response()->json(['success' => true]);
+            }
+
+            DB::transaction(function () use ($request, $method, $sessionId, $quantity, $cartData) {
                 $cartItem = $cartData->items()->firstOrCreate(
                     [
                         'product_id' => json_decode($request->input('product_data'))->id
@@ -34,11 +44,16 @@ class CartController extends Controller
                         'product_data' => $request->input('product_data')
                     ]
                 );
-                if ($request->input('qty') !== null) {
-                    $cartItem->qty = $request->input('qty');
-                } else {
-                    $cartItem->qty++;
+                switch ($method) {
+                    case 'set':
+                        $cartItem->qty = $quantity;
+                        break;
+
+                    case 'add':
+                        $cartItem->qty += $quantity;
+                        break;
                 }
+
                 $cartItem->save();
             });
             return response()->json(['success' => true]);
