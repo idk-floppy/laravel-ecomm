@@ -22,14 +22,14 @@
                             @blur="hideQuantityInput(item)" @keyup.enter="hideQuantityInput(item)">
                         <p v-else>{{ item.qty }}</p>
                     </td>
-                    <td>{{ formatPrice(JSON.parse(item.product_data).price) }}</td>
-                    <td>{{ formatPrice((JSON.parse(item.product_data).price * item.qty)) }}</td>
+                    <td>{{ formatPrice(getProductPrice(item)) }}</td>
+                    <td>{{ formatPrice((getProductPrice(item) * item.qty)) }}</td>
                 </tr>
                 <tr>
                     <td>Total</td>
                     <td></td>
                     <td></td>
-                    <td>{{ formatPrice(total) }}</td>
+                    <td>{{ total }}</td>
                 </tr>
             </tbody>
         </table>
@@ -53,7 +53,6 @@ export default {
     methods: {
         async getItems() {
             await axios.get('cart/get').then(response => {
-                console.log(response);
                 if (Object.keys(response.data).length > 0) {
                     this.items = response['data']['items'].map(item => ({
                         ...item,
@@ -64,11 +63,26 @@ export default {
             return 0;
         },
         async calculateTotal() {
-            this.total = 0;
-            this.items.forEach(item => {
-                this.total += item.qty * JSON.parse(item.product_data).price;
-            });
-            return 0;
+            let total = 0;
+
+            for (let index = 0; index < this.items.length; index++) {
+                const item = this.items[index];
+                try {
+                    const data = JSON.parse(item.product_data);
+                    if (data && typeof data.price === 'number') {
+                        total += item.qty * data.price;
+                    } else {
+                        throw new Error('Invalid product data');
+                    }
+                } catch (error) {
+                    console.error('Something went wrong!');
+                    console.error(error);
+                }
+            }
+            // this.items.forEach(item => {
+            //     this.total += item.qty * JSON.parse(item.product_data).price;
+            // });
+            this.total = total;
         },
         /**
          * It's called in vue components, e.g. :name="formatQtyInputName(item.product_id)"
@@ -76,6 +90,19 @@ export default {
          */
         formatQtyInputName(id) {
             return String(id) + '-qty';
+        },
+        getProductPrice(item) {
+            try {
+                const data = JSON.parse(item.product_data);
+                if (data && typeof data.price === 'number') {
+                    return data.price
+                } else {
+                    throw new Error('Invalid product data');
+                }
+            } catch (error) {
+                console.error('Something went wrong!');
+                console.error(error);
+            }
         },
         /**
          *
@@ -93,7 +120,7 @@ export default {
          */
         async hideQuantityInput(item) {
             item.showQuantityField = false;
-            if (this.$refs.qtyInput[0].value != item.qty){
+            if (this.$refs.qtyInput[0].value != item.qty) {
                 await this.updateQuantityByField(item.product_data, this.$refs.qtyInput[0].value);
                 await this.calculateTotal();
             }
@@ -121,14 +148,15 @@ export default {
 
 </script>
 <style scoped>
-.spinner-container{
+.spinner-container {
     position: absolute;
-    left:0;
+    left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0,0,0,0.25);
+    background-color: rgba(0, 0, 0, 0.25);
 }
+
 .spinner-border {
     width: 50px;
     height: 50px;

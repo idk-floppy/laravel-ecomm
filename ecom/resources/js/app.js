@@ -1,11 +1,11 @@
 import './bootstrap';
-import { createApp, defineAsyncComponent } from 'vue';
+import { createApp } from 'vue';
 import ProductsGrid from './components/ProductsGrid.vue';
-// import Cart from './components/Cart.vue';
-const Cart = defineAsyncComponent(() => import('./components/Cart.vue'));
+import Cart from './components/Cart.vue';
 import NavItem from './components/NavItem.vue';
 import Navbar from './components/Navbar.vue';
 import mitt from 'mitt';
+import { vue3Debounce } from 'vue-debounce';
 
 import VueSweetalert2 from 'vue-sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
@@ -25,21 +25,20 @@ const app = createApp({
     },
     data() {
         return {
-            cartItems: [],
-        };
+            user: window.authUser ?? null,
+        }
     },
     created() {
-        this.emitter.on('buy', this.buy);
-        this.emitter.on('clearCart', this.clearCart);
+        this.emitter.on('addToCart', this.addToCart);
     },
     mounted() {
-        console.log(this.cartItems);
+        //
     },
     beforeUnmount() {
-        this.emitter.off('buy', this.buy);
+        this.emitter.off('addToCart', this.addToCart);
     },
     methods: {
-        async buy(item, method = "add") {
+        async addToCart(item, method = "add") {
             await axios.post(
                 'cart/add',
                 {
@@ -58,14 +57,11 @@ const app = createApp({
                     });
         },
     },
-    computed: {
-        cartItemsCount() {
-            return this.cartItems.length;
-        },
-        cartTotalPrice() {
-            return this.cartItems.reduce((total, item) => total + item.price, 0);
-        },
-    },
+    provide() {
+        return {
+            user: this.user,
+        }
+    }
 });
 
 app.config.globalProperties.emitter = emitter;
@@ -75,4 +71,5 @@ app.use(ToastPlugin, {
     position: 'top-right',
     duration: 3000,
 });
+app.directive('debounce', vue3Debounce({lock:true, defaultTime: '400ms'}));
 app.mount('#app');

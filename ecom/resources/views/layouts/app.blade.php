@@ -52,6 +52,7 @@
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item" href="{{ route('profile') }}">Profile</a>
                                     <a class="dropdown-item" href="{{ route('logout') }}"
                                         onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
@@ -70,9 +71,15 @@
         </nav>
 
         <main class="py-4 z-1">
+            <div class="container">
+                <h2>@yield('title')</h2>
+            </div>
             @yield('content')
         </main>
     </div>
+    <script>
+        window.authUser = @json(auth()->user());
+    </script>
 </body>
 
 </html>

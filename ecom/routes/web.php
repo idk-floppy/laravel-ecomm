@@ -6,8 +6,10 @@ use App\Models\CartItems;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Api\CartController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\UserController;
+use App\Models\Product;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,23 +22,21 @@ use App\Http\Controllers\Api\CartController;
 |
 */
 
+Auth::routes();
+
+Route::resource('/products', ProductController::class);
+
 Route::get('/', function () {
     return view('products');
-})->name('products');
+})->name('home');
 
 Route::get('/cart', function () {
     return view('cart');
 })->name('cart');
 
-Route::get('/profile', function () {
-    return view('auth\profile');
-})->name('profile');
+Route::get('/profile', [UserController::class, 'show'])->name('profile');
 
-Auth::routes();
-
-Route::get('/home', [HomeController::class, 'index'])->name('home');
-
-Route::group(['middleware' => ['web'], 'controller' => CartController::class], function () {
+Route::group(['controller' => CartController::class], function () {
     Route::post('cart/add', 'addItem');
     Route::get('cart/get', 'getItems');
 });
