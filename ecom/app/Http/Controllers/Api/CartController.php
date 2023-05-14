@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\Product;
 use App\Models\CartData;
 use App\Models\CartItems;
 use Illuminate\Http\Request;
@@ -44,6 +45,7 @@ class CartController extends Controller
                         'product_data' => $request->input('product_data')
                     ]
                 );
+                $cartItem->product_data = Product::find($cartItem->product_id);
                 switch ($method) {
                     case 'set':
                         $cartItem->qty = $quantity;

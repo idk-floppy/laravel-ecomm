@@ -1,13 +1,28 @@
 <template>
     <div class="container">
-        <div class="row">
-            <div class="input-group">
-                <input id="search" v-model="searchTerm" v-debounce="filterProducts" class="w-100 card mb-3 p-2"
-                    placeholder="Keresés">
+        <div class="row mb-4 g-0">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row row-cols-md-3 row-cols-1 g-3">
+                        <div class="col col-sm-12">
+                                <input type="text" id="search" v-model="searchTerm" v-debounce="filterProducts"
+                                class="form-control p-2" placeholder="Search">
+                        </div>
+                        <div class="col">
+                            <div class="input-group">
+                                <input type="number" name="range1" id="range1" class="form-control p-2" placeholder="min ft">
+                                <input type="number" name="range2" id="range2" class="form-control p-2" placeholder="max ft">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <input type="button" value="Search" class="btn btn-primary w-100">
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="row row-cols-1 row-cols-md-3 g-4">
-            <div class="col-md-4" v-for="product in products" :key="product.id" :product="product">
+        <div class="row row-cols-1 row-cols-md-3 g-3 mb-4">
+            <div v-for="product in products" :key="product.id" :product="product">
                 <Card :product="product"></Card>
             </div>
         </div>
@@ -17,7 +32,7 @@
             <p>No results...</p>
         </div>
         <nav>
-            <ul class="pagination justify-content-center mt-5">
+            <ul class="pagination justify-content-center">
                 <li class="page-item" :class="{ 'disabled': !links.prev }">
                     <a class="page-link" @click.prevent="getProducts(searchTerm, links.prev)" href="#">Previous</a>
                 </li>
@@ -36,7 +51,7 @@ import Card from './Card.vue';
 
 export default {
     emits: ['addToCart'],
-    components:{
+    components: {
         Card,
     },
     data() {

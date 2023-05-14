@@ -1,10 +1,10 @@
 <template>
     <div v-if="loading" class="spinner-container">
         <div class="spinner-border" role="status">
-    </div>
+        </div>
     </div>
     <div>
-        <table class="table" v-if="this.items.length > 0">
+        <table class="table table-striped table-hover" v-if="this.items.length > 0">
             <thead>
                 <tr>
                     <th scope="col" class="col-2">Product</th>
@@ -14,22 +14,22 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(item, index) in this.items" :key="index">
-                    <td>{{ JSON.parse(item.product_data).name }}</td>
-                    <td @click="showQuantityInput(item)">
-                        <input type="number" class="form-control" :name="formatQtyInputName(item.product_id)"
-                            :value="item.qty" v-if="item.showQuantityField" ref="qtyInput"
-                            @blur="hideQuantityInput(item)" @keyup.enter="hideQuantityInput(item)">
-                        <p v-else>{{ item.qty }}</p>
+                <tr v-for="(cartItem, index) in this.items" :key="index">
+                    <td>{{ productName(cartItem) }}</td>
+                    <td @click="showQuantityInput(cartItem)">
+                        <input type="number" class="form-control" :name="formatQtyInputName(cartItem.product_id)"
+                            :value="cartItem.qty" v-if="cartItem.showQuantityField" ref="qtyInput"
+                            @blur="hideQuantityInput(cartItem)" @keyup.enter="hideQuantityInput(cartItem)">
+                        <p v-else>{{ cartItem.qty }}</p>
                     </td>
-                    <td>{{ formatPrice(getProductPrice(item)) }}</td>
-                    <td>{{ formatPrice((getProductPrice(item) * item.qty)) }}</td>
+                    <td>{{ formatPrice(productPrice(cartItem)) }}</td>
+                    <td>{{ formatPrice((productPrice(cartItem) * cartItem.qty)) }}</td>
                 </tr>
                 <tr>
                     <td>Total</td>
                     <td></td>
                     <td></td>
-                    <td>{{ total }}</td>
+                    <td>{{ formatPrice(total) }}</td>
                 </tr>
             </tbody>
         </table>
@@ -79,9 +79,6 @@ export default {
                     console.error(error);
                 }
             }
-            // this.items.forEach(item => {
-            //     this.total += item.qty * JSON.parse(item.product_data).price;
-            // });
             this.total = total;
         },
         /**
@@ -119,9 +116,10 @@ export default {
          * @param {Object} item that has: id, cart_data_id, product_id, qty, product_data(json).
          */
         async hideQuantityInput(item) {
+            let newQty = this.$refs.qtyInput[0].value;
             item.showQuantityField = false;
-            if (this.$refs.qtyInput[0].value != item.qty) {
-                await this.updateQuantityByField(item.product_data, this.$refs.qtyInput[0].value);
+            if (newQty != item.qty) {
+                await this.updateQuantityByField(item.product_data, newQty);
                 await this.calculateTotal();
             }
         },
@@ -137,6 +135,18 @@ export default {
         },
         formatPrice(price) {
             return price.toLocaleString('hu-HU') + " Ft";
+        },
+    },
+    computed: {
+        productName: function () {
+            return function (cartItem) {
+                return JSON.parse(cartItem.product_data).name;
+            };
+        },
+        productPrice: function () {
+            return function (cartItem) {
+                return JSON.parse(cartItem.product_data).price;
+            };
         },
     },
     async mounted() {

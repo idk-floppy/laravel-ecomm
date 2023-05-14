@@ -29,33 +29,13 @@ const app = createApp({
         }
     },
     created() {
-        this.emitter.on('addToCart', this.addToCart);
+        //
     },
     mounted() {
         //
     },
     beforeUnmount() {
-        this.emitter.off('addToCart', this.addToCart);
-    },
-    methods: {
-        async addToCart(item, method = "add") {
-            await axios.post(
-                'cart/add',
-                {
-                    product_data: JSON.stringify(item),
-                    method: method,
-                }).then(
-                    response => {
-                        console.log(response.data.success);
-                        if (response.data.success) {
-                            this.$toast.success(item.name+" added to cart");
-                        } else {
-                            this.$toast.error("Something went wrong!");
-                        }
-                    }).catch(error => {
-                        this.$toast.error("Something went wrong!");
-                    });
-        },
+        //
     },
     provide() {
         return {
