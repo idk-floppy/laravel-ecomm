@@ -7,7 +7,7 @@
             <h6 class="card-subtitle mb-2 text-muted">{{ product.price }} Ft</h6>
             <div class="row row-cols-1 g-2">
                 <AddToCartButton :product="product" />
-                <div class="btn-group">
+                <div v-if="user" class="btn-group">
                     <EditItemButton :product="product" />
                     <DeleteItemButton :product="product" />
                 </div>
