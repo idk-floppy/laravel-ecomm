@@ -22,7 +22,7 @@ export default {
                             this.$toast.error("Something went wrong!");
                         }
                     }).catch(error => {
-                        this.$toast.error("Something went wrong!");
+                        return emitter.emit('requestErrorPopup');
                     });
         },
     },

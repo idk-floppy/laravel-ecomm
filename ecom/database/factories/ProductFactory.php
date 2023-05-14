@@ -17,8 +17,13 @@ class ProductFactory extends Factory
      */
     public function definition(): array
     {
+        $randoms = ['Shirt', 'Mug', 'Broccoli', 'Whatever', 'WTF', 'SWAG', 'DontBuyMe', 'Karen'];
+        $name = $this->faker->firstName()
+            . " " . $this->faker->randomElement($randoms)
+            . " " . $this->faker->word()
+            . " " . $this->faker->safeColorName();
         return [
-            'name' => $this->faker->word(),
+            'name' => $name,
             'price' => $this->faker->numberBetween(500, 50000)
         ];
     }

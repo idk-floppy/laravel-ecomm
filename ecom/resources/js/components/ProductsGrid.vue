@@ -3,19 +3,24 @@
         <div class="row mb-4 g-0">
             <div class="card">
                 <div class="card-body">
-                    <div class="row row-cols-md-3 row-cols-1 g-3">
-                        <div class="col col-sm-12">
-                                <input type="text" id="search" v-model="searchTerm" v-debounce="filterProducts"
-                                class="form-control p-2" placeholder="Search">
+                    <div class="row row-cols-md-4 row-cols-1 g-3">
+                        <div class="col">
+                                <input type="text" id="search" v-model="searchTerm" class="form-control p-2" placeholder="Search">
                         </div>
                         <div class="col">
                             <div class="input-group">
-                                <input type="number" name="range1" id="range1" class="form-control p-2" placeholder="min ft">
-                                <input type="number" name="range2" id="range2" class="form-control p-2" placeholder="max ft">
+                                <input type="number" name="minPrice" id="minPrice" v-model="minPrice" class="form-control p-2" placeholder="min ft">
+                                <input type="number" name="maxPrice" id="maxPrice" v-model="maxPrice" class="form-control p-2" placeholder="max ft">
                             </div>
                         </div>
                         <div class="col">
-                            <input type="button" value="Search" class="btn btn-primary w-100">
+                            <select name="orderBy" id="orderBy" v-model="orderBy" class="form-select">
+                                <option value="name">Order by name</option>
+                                <option value="price">Order by price</option>
+                            </select>
+                        </div>
+                        <div class="col">
+                            <input type="button" value="Search" class="btn btn-primary w-100" @click="filterProducts">
                         </div>
                     </div>
                 </div>
@@ -34,19 +39,20 @@
         <nav>
             <ul class="pagination justify-content-center">
                 <li class="page-item" :class="{ 'disabled': !links.prev }">
-                    <a class="page-link" @click.prevent="getProducts(searchTerm, links.prev)" href="#">Previous</a>
+                    <a class="page-link" @click.prevent="getProducts(searchTerm, minPrice, maxPrice, orderBy, links.prev)" href="#">Previous</a>
                 </li>
                 <li class="page-item">
                     <span class="page-link">{{ meta.current_page }}/{{ meta.last_page }}</span>
                 </li>
                 <li class="page-item" :class="{ 'disabled': !links.next }">
-                    <a class="page-link" @click.prevent="getProducts(searchTerm, links.next)" href="#">Next</a>
+                    <a class="page-link" @click.prevent="getProducts(searchTerm, minPrice, maxPrice, orderBy, links.next)" href="#">Next</a>
                 </li>
             </ul>
         </nav>
     </div>
 </template>
 <script>
+import mitt from 'mitt';
 import Card from './Card.vue';
 
 export default {
@@ -60,13 +66,19 @@ export default {
             meta: {},
             links: {},
             searchTerm: '',
+            orderBy: 'name',
+            minPrice: null,
+            maxPrice: null,
         }
     },
     methods: {
-        async getProducts(searchTerm = '', url = '/products') {
+        async getProducts(searchTerm = '', minPrice=null, maxPrice=null, orderBy='name', url = '/products') {
             await axios.get(url, {
                 params: {
                     search: searchTerm,
+                    orderBy: orderBy,
+                    minPrice: minPrice,
+                    maxPrice: maxPrice,
                 }
             })
                 .then(response => {
@@ -76,7 +88,7 @@ export default {
                 });
         },
         filterProducts() {
-            return this.getProducts(this.searchTerm);
+            return this.getProducts(this.searchTerm, this.minPrice, this.maxPrice, this.orderBy);
         },
     },
     mounted() {

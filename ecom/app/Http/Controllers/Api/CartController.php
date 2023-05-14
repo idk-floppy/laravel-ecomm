@@ -76,4 +76,18 @@ class CartController extends Controller
 
         return $cartData->with('items')->first();
     }
+
+    public function removeItem(Request $request)
+    {
+        Log::info($request->all());
+        try {
+            CartItems::where([
+                'id' => $request->id
+            ])->delete();
+        } catch (\Throwable $th) {
+            return response()->json(['success' => false]);
+        }
+
+        return response()->json(['success' => true]);
+    }
 }

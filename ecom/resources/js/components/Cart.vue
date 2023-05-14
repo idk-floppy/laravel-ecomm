@@ -7,15 +7,17 @@
         <table class="table table-striped table-hover" v-if="this.items.length > 0">
             <thead>
                 <tr>
+                    <th scope="col" class="col-1">#</th>
                     <th scope="col" class="col-2">Product</th>
                     <th scope="col" class="col-1">Quantity</th>
-                    <th scope="col" class="col-2">Piece-Price</th>
+                    <th scope="col" class="col-1">Piece-Price</th>
                     <th scope="col" class="col-2">Price</th>
                 </tr>
             </thead>
             <tbody>
                 <tr v-for="(cartItem, index) in this.items" :key="index">
-                    <td>{{ productName(cartItem) }}</td>
+                    <td><button class="btn btn-danger" @click="removeFromCart(cartItem.id)">Remove</button></td>
+                    <td>{{ productName(cartItem) }} ({{ productId(cartItem) }})</td>
                     <td @click="showQuantityInput(cartItem)">
                         <input type="number" class="form-control" :name="formatQtyInputName(cartItem.product_id)"
                             :value="cartItem.qty" v-if="cartItem.showQuantityField" ref="qtyInput"
@@ -26,9 +28,10 @@
                     <td>{{ formatPrice((productPrice(cartItem) * cartItem.qty)) }}</td>
                 </tr>
                 <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
                     <td>Total</td>
-                    <td></td>
-                    <td></td>
                     <td>{{ formatPrice(total) }}</td>
                 </tr>
             </tbody>
@@ -77,9 +80,21 @@ export default {
                 } catch (error) {
                     console.error('Something went wrong!');
                     console.error(error);
+                    return emitter.emit('requestErrorPopup');
                 }
             }
             this.total = total;
+        },
+        async removeFromCart(id){
+            await axios.post('cart/remove',{id: id})
+            .then((response)=>{
+                if (!response.data['success']) {
+                    return emitter.emit('requestErrorPopup');
+                }
+                return window.location.reload();
+            }).catch((error)=>{
+                console.log(error);
+            });
         },
         /**
          * It's called in vue components, e.g. :name="formatQtyInputName(item.product_id)"
@@ -87,19 +102,6 @@ export default {
          */
         formatQtyInputName(id) {
             return String(id) + '-qty';
-        },
-        getProductPrice(item) {
-            try {
-                const data = JSON.parse(item.product_data);
-                if (data && typeof data.price === 'number') {
-                    return data.price
-                } else {
-                    throw new Error('Invalid product data');
-                }
-            } catch (error) {
-                console.error('Something went wrong!');
-                console.error(error);
-            }
         },
         /**
          *
@@ -138,6 +140,11 @@ export default {
         },
     },
     computed: {
+        productId: function () {
+            return function (cartItem) {
+                return JSON.parse(cartItem.product_data).id;
+            };
+        },
         productName: function () {
             return function (cartItem) {
                 return JSON.parse(cartItem.product_data).name;

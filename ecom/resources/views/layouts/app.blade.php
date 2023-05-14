@@ -30,6 +30,12 @@
 
                     <!-- Right Side Of Navbar -->
                     <ul class="navbar-nav ms-auto">
+                        @guest
+                        @else
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('products.create') }}">New item</a>
+                            </li>
+                        @endguest
                         <navitem url="{{ route('cart') }}">Cart</navitem>
                         <!-- Authentication Links -->
                         @guest

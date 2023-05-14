@@ -9,7 +9,7 @@
         <div class="row">
             <div class="card col-md">
                 <div class="card-body">
-                    <form action="{{ route('products.update', $product->id) }}" method="post">
+                    <form action="{{ route('products.update', $product->id) }}" method="post" enctype="multipart/form-data">
                         @method('patch')
                         @csrf
                         <div class="col">
@@ -28,7 +28,8 @@
                             <div class="row py-2">
                                 <div class="col">
                                     <label for="image">Image</label>
-                                    <input type="file" name="image" id="image" class="form-control">
+                                    <input type="file" name="image" id="image" class="form-control"
+                                        accept="image/*">
                                 </div>
                             </div>
                             <div class="row py-2">
