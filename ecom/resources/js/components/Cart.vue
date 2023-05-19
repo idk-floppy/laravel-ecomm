@@ -43,7 +43,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import { addToCart } from './services/AddToCartService';
 
 export default {
     data() {
@@ -125,13 +125,19 @@ export default {
                 await this.calculateTotal();
             }
         },
-        async updateQuantityByField(item, qty) {
+        async updateQuantityByField(product, qty) {
             this.loading = true;
-            await axios.post('cart/add', {
-                product_data: item,
-                qty: qty,
-                method: 'set'
-            });
+            const response = await addToCart(JSON.parse(product).id, qty, 'set');
+            if (response) {
+                this.$toast.success(product.name + " updated");
+            } else {
+                emitter.emit('requestErrorPopup');
+            }
+            // await axios.post('cart/add', {
+            //     product_data: JSON.parse(item).id,
+            //     qty: qty,
+            //     addOrSet: 'set'
+            // });
             await this.getItems();
             this.loading = false;
         },
