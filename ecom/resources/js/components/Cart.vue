@@ -16,16 +16,24 @@
             </thead>
             <tbody>
                 <tr v-for="(cartItem, index) in this.items" :key="index">
-                    <td><button class="btn btn-danger" @click="removeFromCart(cartItem.id)">Remove</button></td>
-                    <td>{{ productName(cartItem) }} ({{ productId(cartItem) }})</td>
+                    <td>
+                        <button class="btn btn-danger" @click="removeFromCart(cartItem.id)">Remove</button>
+                    </td>
+                    <td>
+                        {{ productName(cartItem) }} ({{ productId(cartItem) }})
+                    </td>
                     <td @click="showQuantityInput(cartItem)">
                         <input type="number" class="form-control" :name="formatQtyInputName(cartItem.product_id)"
                             :value="cartItem.qty" v-if="cartItem.showQuantityField" ref="qtyInput"
                             @blur="hideQuantityInput(cartItem)" @keyup.enter="hideQuantityInput(cartItem)">
                         <p v-else>{{ cartItem.qty }}</p>
                     </td>
-                    <td>{{ formatPrice(productPrice(cartItem)) }}</td>
-                    <td>{{ formatPrice((productPrice(cartItem) * cartItem.qty)) }}</td>
+                    <td>
+                        {{ formatPrice(productPrice(cartItem)) }}
+                    </td>
+                    <td>
+                        {{ formatPrice((productPrice(cartItem) * cartItem.qty)) }}
+                    </td>
                 </tr>
                 <tr>
                     <td></td>
@@ -133,11 +141,6 @@ export default {
             } else {
                 emitter.emit('requestErrorPopup');
             }
-            // await axios.post('cart/add', {
-            //     product_data: JSON.parse(item).id,
-            //     qty: qty,
-            //     addOrSet: 'set'
-            // });
             await this.getItems();
             this.loading = false;
         },

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ProductSubmitRequest;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Intervention\Image\Image;
@@ -59,16 +60,20 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(ProductSubmitRequest $request)
     {
-        $img = $request->file('image')->store('images', 'public');
-
-        $data = $request->post();
-        $product = DB::transaction(function () use ($data, $img) {
-            $product = Product::create(['name' => $data['name'], 'price' => $data['price'], 'image' => $img]);
-            return $product;
-        });
-        return Redirect::route('products.show', ['product' => $product]);
+        try {
+            $img = $request->file('image')->store('images', 'public');
+            $data = $request->post();
+            $product = DB::transaction(function () use ($data, $img) {
+                $product = Product::create(['name' => $data['name'], 'price' => $data['price'], 'image' => $img]);
+                return $product;
+            });
+            return response()->json(['success' => true, 'product' => route('products.show', $product->id)]);
+        } catch (\Throwable $th) {
+            report($th);
+            return response()->json(['success' => false]);
+        }
     }
 
     /**
@@ -90,7 +95,7 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Product $product)
+    public function update(ProductSubmitRequest $request, Product $product)
     {
         $data = $request->post();
         try {
@@ -98,6 +103,7 @@ class ProductController extends Controller
                 if ($request->file('image')) {
                     if ($product->image) {
                         Storage::delete($product->image);
+                        Log::info('Image ' . $product->image . ' deleted');
                     }
                     $img = $request->file('image')->store('images', 'public');
                     $product->image = $img;
@@ -106,12 +112,11 @@ class ProductController extends Controller
                 $product->price = $data['price'];
                 $product->save();
             });
+            return Redirect::route('products.show', ['product' => $product]);
         } catch (\Throwable $th) {
             report($th);
             return response()->json(['success' => false]);
         }
-
-        return Redirect::route('products.show', ['product' => $product]);
     }
 
     /**
@@ -127,10 +132,10 @@ class ProductController extends Controller
                 CartItems::where('product_id', $product->id)->delete();
                 $product->delete();
             });
+            return response()->json(['success' => true]);
         } catch (\Throwable $th) {
+            report($th);
             return response()->json(['success' => false]);
         }
-
-        return response()->json(['success' => true]);
     }
 }

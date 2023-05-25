@@ -10,7 +10,7 @@
             <div class="card col-md">
                 <div class="card-body">
                     <form action="{{ route('products.update', $product->id) }}" method="post" enctype="multipart/form-data">
-                        @method('patch')
+                        @method('put')
                         @csrf
                         <div class="col">
                             <div class="row py-2">
