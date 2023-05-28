@@ -5,12 +5,12 @@
                 <div class="card-body">
                     <div class="row row-cols-md-4 row-cols-1 g-3">
                         <div class="col">
-                                <input type="text" id="search" v-model="searchTerm" class="form-control p-2" placeholder="Search">
+                                <input type="text" id="search" v-model="searchTerm" class="form-control p-2" placeholder="Search" @keydown.enter="filterProducts">
                         </div>
                         <div class="col">
                             <div class="input-group">
-                                <input type="number" name="minPrice" id="minPrice" v-model="minPrice" class="form-control p-2" placeholder="min ft">
-                                <input type="number" name="maxPrice" id="maxPrice" v-model="maxPrice" class="form-control p-2" placeholder="max ft">
+                                <input type="number" name="minPrice" id="minPrice" v-model="minPrice" class="form-control p-2" placeholder="min ft" @keydown.enter="filterProducts">
+                                <input type="number" name="maxPrice" id="maxPrice" v-model="maxPrice" class="form-control p-2" placeholder="max ft" @keydown.enter="filterProducts">
                             </div>
                         </div>
                         <div class="col">
@@ -52,7 +52,6 @@
     </div>
 </template>
 <script>
-import mitt from 'mitt';
 import Card from './Card.vue';
 
 export default {

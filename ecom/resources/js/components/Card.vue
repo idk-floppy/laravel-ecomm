@@ -1,6 +1,6 @@
 <template>
     <div class="card">
-        <img :src="getProductImage(product.image)" class="card-img-top ">
+        <img :src="getProductImage(product.image)" class="card-img-top" />
         <p></p>
         <div class="card-body">
             <h5 class="card-title"><span role="button" @click="showProduct(product.id)">{{ product.name }} ({{ product.id }})</span></h5>
@@ -44,3 +44,10 @@ export default {
 }
 
 </script>
+<style scoped>
+.card-img-top {
+    object-fit: contain;
+    object-position: center;
+    height: 200px;
+  }
+</style>
