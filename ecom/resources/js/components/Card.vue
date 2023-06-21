@@ -48,6 +48,6 @@ export default {
 .card-img-top {
     object-fit: cover;
     object-position: center;
-    height: 200px;
+    height: clamp(300px, 350px, 450px);
   }
 </style>
