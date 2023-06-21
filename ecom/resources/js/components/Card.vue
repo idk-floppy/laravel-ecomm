@@ -46,7 +46,7 @@ export default {
 </script>
 <style scoped>
 .card-img-top {
-    object-fit: contain;
+    object-fit: cover;
     object-position: center;
     height: 200px;
   }
