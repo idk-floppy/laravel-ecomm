@@ -3,7 +3,6 @@ import { createApp } from 'vue';
 import ProductsGrid from './components/ProductsGrid.vue';
 import ProductForm from './components/ProductForm.vue';
 import Cart from './components/Cart.vue';
-import Card from './components/Card.vue';
 import NavItem from './components/NavItem.vue';
 import Navbar from './components/Navbar.vue';
 import mitt from 'mitt';
@@ -28,7 +27,6 @@ const app = createApp({
         'products-grid': ProductsGrid,
         'product-form': ProductForm,
         'cart': Cart,
-        'card': Card,
         'navitem': NavItem,
         'navbar': Navbar,
     },

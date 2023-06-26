@@ -28,7 +28,7 @@
         </div>
         <div class="row row-cols-1 row-cols-md-3 g-3 mb-4">
             <div v-for="product in products" :key="product.id" :product="product">
-                <Card :product="product"></Card>
+                <ProductCard :product="product"></ProductCard>
             </div>
         </div>
 
@@ -52,12 +52,12 @@
     </div>
 </template>
 <script>
-import Card from './Card.vue';
+import ProductCard from './ProductCard.vue';
 
 export default {
     emits: ['addToCart'],
     components: {
-        Card,
+        ProductCard,
     },
     data() {
         return {
@@ -71,7 +71,7 @@ export default {
         }
     },
     methods: {
-        async getProducts(searchTerm = '', minPrice=null, maxPrice=null, orderBy='name', url = '/products') {
+        async getProducts(searchTerm = '', minPrice = null, maxPrice = null, orderBy = 'name', url = '/products') {
             await axios.get(url, {
                 params: {
                     search: searchTerm,
