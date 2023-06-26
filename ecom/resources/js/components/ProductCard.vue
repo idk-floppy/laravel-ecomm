@@ -2,10 +2,10 @@
     <CardBase>
         <template v-slot:image><img :src="getProductImage(product.image)" class="card-img-top" /></template>
             <template v-slot:title><h5 class="card-title"><span role="button" @click="showProduct(product.id)">{{ product.name }} ({{ product.id }})</span></h5></template>
-            <template v-slot:details>{{ product.price }} Ft</template>
+            <template v-slot:details>{{ productPrice }}</template>
             <template v-slot:buttons>
                 <AddToCartButton :product="product" />
-                <div v-if="user" class="btn-group">
+                <div v-if="authenticated" class="btn-group">
                     <EditItemButton :product="product" />
                     <DeleteItemButton :product="product" />
                 </div>
@@ -28,7 +28,7 @@ export default {
     props: {
         product: Object,
     },
-    inject: ["user"],
+    inject: ["authenticated"],
     methods: {
         showProduct(id) {
             return window.location.href = "/products/" + id;
@@ -38,6 +38,11 @@ export default {
                 return window.location.origin + '/storage/' + image;
             }
             return null;
+        }
+    },
+    computed: {
+        productPrice(){
+            return (this.product.price).toLocaleString("hu-HU", {useGrouping: true}) + " Ft";
         }
     },
 }

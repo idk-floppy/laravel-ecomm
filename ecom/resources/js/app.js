@@ -2,6 +2,7 @@ import './bootstrap';
 import { createApp } from 'vue';
 import ProductsGrid from './components/ProductsGrid.vue';
 import ProductForm from './components/ProductForm.vue';
+import ProductCard from './components/ProductCard.vue';
 import Cart from './components/Cart.vue';
 import NavItem from './components/NavItem.vue';
 import Navbar from './components/Navbar.vue';
@@ -26,14 +27,13 @@ const app = createApp({
     components: {
         'products-grid': ProductsGrid,
         'product-form': ProductForm,
+        'product-card': ProductCard,
         'cart': Cart,
         'navitem': NavItem,
         'navbar': Navbar,
     },
     data() {
-        return {
-            user: window.authUser ?? null,
-        }
+        //
     },
     created() {
         //
@@ -46,7 +46,7 @@ const app = createApp({
     },
     provide() {
         return {
-            user: this.user,
+            authenticated: window.authenticated,
         }
     },
     methods: {

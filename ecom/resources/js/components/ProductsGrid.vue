@@ -71,7 +71,7 @@ export default {
         }
     },
     methods: {
-        async getProducts(searchTerm = '', minPrice = null, maxPrice = null, orderBy = 'name', url = '/products') {
+        async getProducts(searchTerm = '', minPrice = null, maxPrice = null, orderBy = 'name', url = '/api/products') {
             await axios.get(url, {
                 params: {
                     search: searchTerm,

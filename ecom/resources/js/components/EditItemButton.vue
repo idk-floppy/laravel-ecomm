@@ -1,5 +1,5 @@
 <template>
-    <button class="btn btn-default text-uppercase font-weight-bold" @click="editItem(product)">Edit</button>
+    <button class="btn btn-secondary text-uppercase font-weight-bold" @click="editItem(product)">Edit</button>
 </template>
 <script>
 export default {
