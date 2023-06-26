@@ -3,18 +3,24 @@
 namespace App\Http\Controllers\api;
 
 use App\Models\Product;
+use App\Models\CartItems;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ProductResource;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Redirect;
+use App\Http\Requests\ProductSubmitRequest;
 
 class ApiProductsController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth', ['except' => [
-            'index', 'show'
-        ]]);
-    }
+    // public function __construct()
+    // {
+    //     $this->middleware('auth', ['except' => [
+    //         'index', 'show'
+    //     ]]);
+    // }
     /**
      * Display a listing of the resource.
      */

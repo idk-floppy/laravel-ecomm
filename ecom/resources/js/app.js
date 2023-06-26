@@ -2,6 +2,7 @@ import './bootstrap';
 import { createApp } from 'vue';
 import ProductsGrid from './components/ProductsGrid.vue';
 import ProductForm from './components/ProductForm.vue';
+import ProductEditForm from './components/ProductEditForm.vue';
 import ProductCard from './components/ProductCard.vue';
 import Cart from './components/Cart.vue';
 import NavItem from './components/NavItem.vue';
@@ -27,6 +28,7 @@ const app = createApp({
     components: {
         'products-grid': ProductsGrid,
         'product-form': ProductForm,
+        'product-update-form': ProductEditForm,
         'product-card': ProductCard,
         'cart': Cart,
         'navitem': NavItem,

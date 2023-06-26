@@ -52,6 +52,7 @@ export default {
             formData.append('image', this.$refs.image.files[0]);
             formData.append('name', this.name);
             formData.append('price', this.price);
+            formData.append('_method', 'post');
             let response = await submitProductForm(formData)
             .then((response)=>{
                 return response;

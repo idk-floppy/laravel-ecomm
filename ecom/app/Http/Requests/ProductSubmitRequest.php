@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Log;
 
 class ProductSubmitRequest extends FormRequest
 {
@@ -21,14 +22,16 @@ class ProductSubmitRequest extends FormRequest
      */
     public function rules(): array
     {
+        $method = request()->input('_method');
+        Log::info($method);
         $rules = [
             'name' => ['required', 'string', 'min:3', 'max:255'],
             'price' => ['required', 'numeric', 'min:0', 'integer'],
         ];
 
-        if ($this->isMethod('post')) { // Create method
+        if ($method == 'post') { // Create method
             $rules['image'] = ['required', 'image', 'mimes:jpeg,png', 'max:5120'];
-        } else if ($this->isMethod('put') || $this->isMethod('patch')) { // Update method
+        } else if ($method == 'put' || $method == 'patch') { // Update method
             $rules['image'] = ['nullable', 'image', 'mimes:jpeg,png', 'max:5120'];
         }
 
