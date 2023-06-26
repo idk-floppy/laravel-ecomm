@@ -83,7 +83,7 @@
         </main>
     </div>
     <script>
-        window.authUser = @json(auth()->user());
+        window.authenticated = @json(auth()->check());
     </script>
 </body>
 
