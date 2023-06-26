@@ -34,6 +34,8 @@ Route::get('/cart', function () {
     return view('cart');
 })->name('cart');
 
+// Route::get('/profile', [UserController::class, 'show'])->middleware('auth')->name('profile'); // végül nem kellett
+
 Route::group(['controller' => CartController::class], function () {
     Route::post('cart/add', 'addItem');
     Route::get('cart/get', 'getItems');
