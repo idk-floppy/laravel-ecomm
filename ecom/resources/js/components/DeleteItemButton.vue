@@ -14,7 +14,7 @@ export default {
                 confirmButtonText: 'Delete',
             }).then(async (result) => {
             if (result.isConfirmed) {
-                await axios.delete('products/'+product.id)
+                await axios.delete('api/products/'+product.id)
                 .then((response)=>{
                     if (response.data['success']) {
                         return window.location.href = window.location.origin;
