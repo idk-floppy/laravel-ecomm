@@ -4,13 +4,13 @@
             <div class="row py-2">
                 <div class="col">
                     <div class="form-floating">
-                        <input type="text" v-model="name" name="name" id="name" class="form-control" :class="{'is-invalid': errors && errors.name}" required placeholder="Name">
+                        <input type="text" v-model="name" name="name" id="name" class="form-control" :class="{ 'is-invalid': errors && errors.name }" required placeholder="Name">
                         <label for="name">Name</label>
                     </div>
                 </div>
                 <div class="col">
                     <div class="form-floating">
-                        <input type="number" v-model="price" name="price" id="price" class="form-control" :class="{'is-invalid': errors && errors.price}" min="0" required placeholder="Price">
+                        <input type="number" v-model="price" name="price" id="price" class="form-control" :class="{ 'is-invalid': errors && errors.price }" min="0" required placeholder="Price">
                         <label for="price">Price</label>
                     </div>
                 </div>
@@ -18,7 +18,7 @@
             <div class="row py-2">
                 <div class="col">
                     <label for="image">Image</label>
-                    <input type="file" name="image" id="image" class="form-control" ref="image" :class="{'is-invalid': errors && errors.image}">
+                    <input type="file" name="image" id="image" class="form-control" ref="image" :class="{ 'is-invalid': errors && errors.image }">
                 </div>
             </div>
             <div class="row py-2">
@@ -53,10 +53,12 @@ export default {
     methods: {
         async submitForm() {
             let formData = new FormData();
-            formData.append('image', this.$refs.image.files[0]);
+            if (typeof this.$refs.image.files[0] !== "undefined") {
+                formData.append('image', this.$refs.image.files[0]);
+            }
             formData.append('name', this.name);
             formData.append('price', this.price);
-            formData.append('_method', 'patch');
+            formData.append('_method', 'PATCH');
             let response = await SubmitEditProductForm(formData, this.product.id)
                 .then((response) => {
                     return response;

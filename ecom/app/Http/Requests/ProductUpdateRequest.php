@@ -2,10 +2,11 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Http\Requests\BaseProductSubmitRequest;
 
-class ProductSubmitRequest extends BaseProductSubmitRequest
+class ProductUpdateRequest extends BaseProductSubmitRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,7 +24,7 @@ class ProductSubmitRequest extends BaseProductSubmitRequest
     public function rules(): array
     {
         return array_merge(parent::rules(), [
-            "image" => ['required', 'image', 'mimes:jpeg,png', 'max:5120'],
+            "image" => ['nullable', 'sometimes', 'image', 'mimes:jpeg,png', 'max:5120'],
         ]);
     }
 }

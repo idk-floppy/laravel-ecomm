@@ -4,13 +4,13 @@
             <div class="row py-2">
                 <div class="col">
                     <div class="form-floating">
-                        <input type="text" v-model="name" name="name" id="name" class="form-control" :class="{'is-invalid': this.errors && this.errors.name}" required placeholder="Name">
+                        <input type="text" v-model="name" name="name" id="name" class="form-control" :class="{ 'is-invalid': this.errors && this.errors.name }" required placeholder="Name">
                         <label for="name">Name</label>
                     </div>
                 </div>
                 <div class="col">
                     <div class="form-floating">
-                        <input type="number" v-model="price" name="price" id="price" class="form-control" :class="{'is-invalid': this.errors && this.errors.price}" min="0" required placeholder="Price">
+                        <input type="number" v-model="price" name="price" id="price" class="form-control" :class="{ 'is-invalid': this.errors && this.errors.price }" min="0" required placeholder="Price">
                         <label for="price">Price</label>
                     </div>
                 </div>
@@ -18,7 +18,7 @@
             <div class="row py-2">
                 <div class="col">
                     <label for="image">Image</label>
-                    <input type="file" name="image" id="image" class="form-control" required ref="image" :class="{'is-invalid': this.errors && this.errors.image}">
+                    <input type="file" name="image" id="image" class="form-control" required ref="image" :class="{ 'is-invalid': this.errors && this.errors.image }">
                 </div>
             </div>
             <div class="row py-2">
@@ -35,7 +35,7 @@
     </div>
 </template>
 <script>
-import {submitProductForm} from './services/SubmitProductForm';
+import { submitProductForm } from './services/SubmitProductForm';
 
 export default {
     data() {
@@ -46,30 +46,29 @@ export default {
             success: null,
         }
     },
-    methods:{
-        async submitForm(){
+    methods: {
+        async submitForm() {
             let formData = new FormData();
             formData.append('image', this.$refs.image.files[0]);
             formData.append('name', this.name);
             formData.append('price', this.price);
-            formData.append('_method', 'post');
             let response = await submitProductForm(formData)
-            .then((response)=>{
-                return response;
-            })
-            .catch((error)=>{
-                this.errors = error.response.data.errors;
-                this.success = false;
-            });
+                .then((response) => {
+                    return response;
+                })
+                .catch((error) => {
+                    this.errors = error.response.data.errors;
+                    this.success = false;
+                });
 
             if (response.success) {
                 this.$swal.fire({
-                icon: 'success',
-                title: 'Success',
-                text: 'Product successfully created',
-            }).then(()=>{
-                window.location.href = response.product;
-            });
+                    icon: 'success',
+                    title: 'Success',
+                    text: 'Product successfully created',
+                }).then(() => {
+                    window.location.href = response.product;
+                });
             }
         },
     }

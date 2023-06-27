@@ -1,14 +1,10 @@
 <?php
 
-use App\Http\Controllers\api\ApiProductsController;
+use App\Http\Controllers\Api\ApiProductsController;
 use App\Http\Controllers\Api\CartController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ProductController;
-use App\Http\Controllers\Api\Products\AddProductController;
-use App\Http\Controllers\Api\Products\EditProductController;
-use App\Http\Controllers\Api\Products\ListProductsController;
-use App\Http\Controllers\Api\Products\ShowProductController;
 
 /*
 |--------------------------------------------------------------------------

@@ -3,9 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use App\Http\Requests\BaseProductSubmitRequest;
 
-class ProductSubmitRequest extends BaseProductSubmitRequest
+abstract class BaseProductSubmitRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,8 +21,9 @@ class ProductSubmitRequest extends BaseProductSubmitRequest
      */
     public function rules(): array
     {
-        return array_merge(parent::rules(), [
-            "image" => ['required', 'image', 'mimes:jpeg,png', 'max:5120'],
-        ]);
+        return [
+            'name' => ['required', 'string', 'min:3', 'max:255'],
+            'price' => ['required', 'numeric', 'min:0', 'integer'],
+        ];
     }
 }

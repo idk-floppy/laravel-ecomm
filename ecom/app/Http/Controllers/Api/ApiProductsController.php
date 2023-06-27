@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Http\Controllers\api;
+namespace App\Http\Controllers\Api;
 
 use App\Models\Product;
 use App\Models\CartItems;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ProductResource;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Redirect;
 use App\Http\Requests\ProductSubmitRequest;
+use App\Http\Requests\ProductUpdateRequest;
 
 class ApiProductsController extends Controller
 {
@@ -78,7 +78,7 @@ class ApiProductsController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(ProductSubmitRequest $request, Product $product)
+    public function update(ProductUpdateRequest $request, Product $product)
     {
         $data = $request->post();
         try {
@@ -86,7 +86,6 @@ class ApiProductsController extends Controller
                 if ($request->file('image')) {
                     if ($product->image) {
                         Storage::delete($product->image);
-                        Log::info('Image ' . $product->image . ' deleted');
                     }
                     $img = $request->file('image')->store('images', 'public');
                     $product->image = $img;
@@ -95,7 +94,7 @@ class ApiProductsController extends Controller
                 $product->price = $data['price'];
                 $product->save();
             });
-            return Redirect::route('products.show', ['product' => $product]);
+            return response()->json(['success' => true, 'product' => route('products.show', $product->id)]);
         } catch (\Throwable $th) {
             report($th);
             return response()->json(['success' => false]);
