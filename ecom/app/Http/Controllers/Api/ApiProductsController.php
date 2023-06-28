@@ -15,12 +15,6 @@ use App\Http\Requests\ProductUpdateRequest;
 
 class ApiProductsController extends Controller
 {
-    // public function __construct()
-    // {
-    //     $this->middleware('auth', ['except' => [
-    //         'index', 'show'
-    //     ]]);
-    // }
     /**
      * Display a listing of the resource.
      */
@@ -72,7 +66,7 @@ class ApiProductsController extends Controller
      */
     public function show(Product $product)
     {
-        return $product;
+        return ProductResource::collection($products);
     }
 
     /**
