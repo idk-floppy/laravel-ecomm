@@ -24,5 +24,7 @@ class RegistrationController extends Controller
             "email" => $fields["email"],
             "password" => bcrypt($fields["password"]),
         ]);
+
+        $token = $user->createToken('default-token',);
     }
 }
