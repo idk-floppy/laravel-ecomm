@@ -13,7 +13,7 @@ class RegistrationController extends Controller
      */
     public function __invoke(Request $request)
     {
-        $request->validate([
+        $fields = $request->validate([
             "name" => ["required", "max:255", "string"],
             "email" => ["required", "max:255", "min:3", "string", "unique:users,email"],
             "password" => ["required", "string", "confirmed"],
@@ -25,6 +25,13 @@ class RegistrationController extends Controller
             "password" => bcrypt($fields["password"]),
         ]);
 
-        $token = $user->createToken('default-token',);
+        $token = $user->createToken('default-token')->plainTextToken;
+
+        $response = [
+            "user" => $user,
+            "token" => $token,
+        ];
+
+        return response($response, 201);
     }
 }
