@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\Cart\AddItemToCartController;
 use App\Models\Order;
 use App\Models\CartData;
 use App\Models\CartItems;
@@ -37,8 +38,8 @@ Route::get('/cart', function () {
     return view('cart');
 })->name('cart');
 
+Route::post('cart/add', AddItemToCartController::class);
 Route::group(['controller' => CartController::class], function () {
-    Route::post('cart/add', 'addItem');
     Route::get('cart/get', 'getItems');
     Route::post('cart/remove', 'removeItem');
 });

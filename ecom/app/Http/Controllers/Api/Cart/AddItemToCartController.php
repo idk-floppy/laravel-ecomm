@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Cart;
 
+use App\Models\Product;
 use App\Models\CartData;
 use App\Models\CartItems;
 use Illuminate\Http\Request;
@@ -17,7 +18,7 @@ class AddItemToCartController extends Controller
     {
         try {
             $user = $request->user();
-            $method = $request->input('method');
+            $addOrSet = $request->input('addOrSet');
             $sessionId = $request->session()->getId();
             $quantity = $request->filled('qty') ? $request->qty : 1;
 
@@ -30,22 +31,22 @@ class AddItemToCartController extends Controller
             if ($quantity < 1) {
                 CartItems::where([
                     'cart_data_id' => $cartData->id,
-                    'product_id' => json_decode($request->input('product_data'))->id,
+                    'product_id' => $request->input('product_data')
                 ])->delete();
                 return response()->json(['success' => true]);
             }
 
-            DB::transaction(function () use ($request, $method, $sessionId, $quantity, $cartData) {
+            DB::transaction(function () use ($request, $addOrSet, $sessionId, $quantity, $cartData) {
                 $cartItem = $cartData->items()->firstOrCreate(
                     [
-                        'product_id' => json_decode($request->input('product_data'))->id
+                        'product_id' => $request->input('product_data')
                     ],
                     [
                         'qty' => 0,
-                        'product_data' => $request->input('product_data')
                     ]
                 );
-                switch ($method) {
+                $cartItem->product_data = Product::find($cartItem->product_id);
+                switch ($addOrSet) {
                     case 'set':
                         $cartItem->qty = $quantity;
                         break;
