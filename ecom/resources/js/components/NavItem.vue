@@ -1,17 +1,17 @@
 <template>
-    <li class="nav-item">
-        <a class="nav-link" :href="url">
-        <slot>Link</slot>
+  <li class="nav-item">
+    <a class="nav-link" :href="url">
+      <slot>Link</slot>
     </a>
-    </li>
+  </li>
 </template>
 <script>
 export default {
-    props:{
-        url: {
-            type: String,
-            default: "#"
-        },
-    }
-}
+  props: {
+    url: {
+      type: String,
+      default: "#",
+    },
+  },
+};
 </script>
