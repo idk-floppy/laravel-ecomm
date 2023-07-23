@@ -106,13 +106,16 @@ export default {
       this.total = total;
     },
     async removeFromCart(product_id) {
+        this.loading = true;
       await axios
         .post("cart/remove", { product_id: product_id })
-        .then((response) => {
+        .then(async (response) => {
           if (!response.data["success"]) {
+            this.loading = false;
             return emitter.emit("requestErrorPopup");
           }
-          return window.location.reload();
+            await this.getItems();
+            this.loading = false;
         })
         .catch((error) => {
           console.log(error);
