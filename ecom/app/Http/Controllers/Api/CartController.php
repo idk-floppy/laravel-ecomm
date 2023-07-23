@@ -12,79 +12,21 @@ use App\Http\Controllers\Controller;
 
 class CartController extends Controller
 {
-
-    // public function addItem(Request $request)
-    // {
-    //     try {
-    //         $user = $request->user();
-    //         $addOrSet = $request->input('addOrSet');
-    //         $sessionId = $request->session()->getId();
-    //         $quantity = $request->filled('qty') ? $request->qty : 1;
-
-    //         if ($user) {
-    //             $cartData = CartData::firstOrCreate(['user_id' => $user->id]);
-    //         } else {
-    //             $cartData = CartData::firstOrCreate(['session_id' => $sessionId]);
-    //         }
-
-    //         if ($quantity < 1) {
-    //             CartItems::where([
-    //                 'cart_data_id' => $cartData->id,
-    //                 'product_id' => $request->input('product_data')
-    //             ])->delete();
-    //             return response()->json(['success' => true]);
-    //         }
-
-    //         DB::transaction(function () use ($request, $addOrSet, $sessionId, $quantity, $cartData) {
-    //             $cartItem = $cartData->items()->firstOrCreate(
-    //                 [
-    //                     'product_id' => $request->input('product_data')
-    //                 ],
-    //                 [
-    //                     'qty' => 0,
-    //                     // 'product_data' => $request->input('product_data')
-    //                 ]
-    //             );
-    //             $cartItem->product_data = Product::find($cartItem->product_id);
-    //             switch ($addOrSet) {
-    //                 case 'set':
-    //                     $cartItem->qty = $quantity;
-    //                     break;
-
-    //                 case 'add':
-    //                     $cartItem->qty += $quantity;
-    //                     break;
-    //             }
-
-    //             $cartItem->save();
-    //         });
-    //         return response()->json(['success' => true]);
-    //     } catch (\Throwable $th) {
-    //         report($th);
-    //         return response()->json(['success' => false]);
-    //     }
-    // }
-
-    public function getItems(Request $request)
+    public function getItems(Request $request, CartData $helper)
     {
-        $user = $request->user();
-        $cartData = CartData::query()->where('session_id', $request->session()->getId());
+        $cart = $helper->getCart($request);
 
-        $cartData->when($user, function ($q) use ($user) {
-            return $q->orWhere('user_id', $user->id);
-        });
-
-        return $cartData->with('items')->first();
+        return $cart->with('items')->first();
     }
 
-    public function removeItem(Request $request)
+    public function removeItem(Request $request, CartData $helper)
     {
-        Log::info($request->all());
         try {
-            CartItems::where([
-                'id' => $request->id
-            ])->delete();
+            $cart = $helper->getCart($request);
+            Log::info($request->product_id);
+            $helper->removeItem($cart, $request->product_id);
         } catch (\Throwable $th) {
+            report($th);
             return response()->json(['success' => false]);
         }
 

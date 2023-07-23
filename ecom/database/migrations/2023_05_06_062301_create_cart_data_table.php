@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('user_id')->nullable();
             $table->string('session_id')->nullable();
+            $table->timestamps();
         });
     }
 

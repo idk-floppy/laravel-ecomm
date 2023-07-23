@@ -24,23 +24,9 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@local',
             'password' => Hash::make('admin123'),
         ]);
-        $defaultOrderStatuses = [
-            ['id' => 1, 'text' => 'SUBMITTED'],
-            ['id' => 2, 'text' => 'CANCELLED'],
-            ['id' => 3, 'text' => 'APPROVED'],
-            ['id' => 4, 'text' => 'PROCESSING'],
-            ['id' => 5, 'text' => 'SHIPPING'],
-            ['id' => 6, 'text' => 'CLOSED'],
-        ];
-
-        foreach ($defaultOrderStatuses as $status) {
-            OrderStatuses::create($status);
-        }
 
         $this->call([
             ProductSeeder::class,
-            OrderSeeder::class,
-            OrderItemsSeeder::class,
         ]);
     }
 }

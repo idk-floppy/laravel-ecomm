@@ -14,38 +14,39 @@ class AddItemToCartController extends Controller
     /**
      * Handle the incoming request.
      */
-    public function __invoke(Request $request)
+    public function __invoke(Request $request, CartData $helper)
     {
         try {
-            $user = $request->user();
-            $addOrSet = $request->input('addOrSet');
-            $sessionId = $request->session()->getId();
-            $quantity = $request->filled('qty') ? $request->qty : 1;
 
-            if ($user) {
-                $cartData = CartData::firstOrCreate(['user_id' => $user->id]);
-            } else {
-                $cartData = CartData::firstOrCreate(['session_id' => $sessionId]);
+            if (!(Product::query()->find($request->input('product_id'))->exists())) {
+                report('Item does not exist');
+                return response()->json(['success' => false]);
             }
 
+            $product = Product::query()->find($request->input('product_id'));
+            $quantity = $request->filled('qty') ? $request->qty : 1;
+
+            $cart = $helper->getCart($request);
+
             if ($quantity < 1) {
-                CartItems::where([
-                    'cart_data_id' => $cartData->id,
-                    'product_id' => $request->input('product_data')
-                ])->delete();
+                $helper->removeItem($cart, $product->id);
                 return response()->json(['success' => true]);
             }
 
-            DB::transaction(function () use ($request, $addOrSet, $sessionId, $quantity, $cartData) {
-                $cartItem = $cartData->items()->firstOrCreate(
+            $addOrSet = $request->input('addOrSet');
+
+            DB::transaction(function () use ($product, $addOrSet, $quantity, $cart) {
+                $cartItem = $cart->items()->firstOrCreate(
                     [
-                        'product_id' => $request->input('product_data')
+                        'product_id' => $product->id
                     ],
                     [
                         'qty' => 0,
                     ]
                 );
-                $cartItem->product_data = Product::find($cartItem->product_id);
+
+                $cartItem->product_data = $product;
+
                 switch ($addOrSet) {
                     case 'set':
                         $cartItem->qty = $quantity;
@@ -57,6 +58,7 @@ class AddItemToCartController extends Controller
                 }
 
                 $cartItem->save();
+                $cart->touch();
             });
             return response()->json(['success' => true]);
         } catch (\Throwable $th) {

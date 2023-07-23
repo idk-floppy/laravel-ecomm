@@ -6,7 +6,7 @@
     <template v-slot:title
       ><h5 class="card-title">
         <span role="button" @click="showProduct(product.id)"
-          >{{ product.name }} ({{ product.id }})</span
+          >{{ product.name }}</span
         >
       </h5></template
     >

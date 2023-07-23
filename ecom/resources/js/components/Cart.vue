@@ -6,7 +6,7 @@
     <div class="table-responsive">
       <table
         class="table table-striped table-hover"
-        v-if="this.items.length > 0"
+        v-if="hasItems"
       >
         <thead>
           <tr>
@@ -22,12 +22,12 @@
             <td>
               <button
                 class="btn btn-danger"
-                @click="removeFromCart(cartItem.id)"
+                @click="removeFromCart(cartItem.product_id)"
               >
                 Remove
               </button>
             </td>
-            <td>{{ productName(cartItem) }} ({{ productId(cartItem) }})</td>
+            <td>{{ productName(cartItem) }}</td>
             <td @click="showQuantityInput(cartItem)">
               <input
                 type="number"
@@ -105,9 +105,9 @@ export default {
       }
       this.total = total;
     },
-    async removeFromCart(id) {
+    async removeFromCart(product_id) {
       await axios
-        .post("cart/remove", { id: id })
+        .post("cart/remove", { product_id: product_id })
         .then((response) => {
           if (!response.data["success"]) {
             return emitter.emit("requestErrorPopup");
@@ -164,10 +164,8 @@ export default {
     },
   },
   computed: {
-    productId: function () {
-      return function (cartItem) {
-        return JSON.parse(cartItem.product_data).id;
-      };
+    hasItems: function () {
+        return (this.items.length > 0)
     },
     productName: function () {
       return function (cartItem) {
