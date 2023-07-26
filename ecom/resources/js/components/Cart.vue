@@ -75,7 +75,6 @@ export default {
   methods: {
     async getItems() {
       await axios.get("cart/get").then((response) => {
-        console.log(response);
         if (Object.keys(response.data).length > 0) {
           this.items = response["data"]["items"].map((item) => ({
             ...item,
@@ -181,7 +180,7 @@ export default {
       };
     },
   },
-  async created() {
+  async mounted() {
     await this.getItems();
     await this.calculateTotal();
     this.loading = false;
