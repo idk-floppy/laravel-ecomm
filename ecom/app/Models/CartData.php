@@ -29,9 +29,6 @@ class CartData extends Model
         }
 
         $cart->load('items');
-
-        Log::info($cart);
-
         return $cart;
     }
 
