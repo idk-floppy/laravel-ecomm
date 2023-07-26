@@ -7,6 +7,7 @@ use App\Models\CartData;
 use App\Models\CartItems;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 
 class AddItemToCartController extends Controller
@@ -26,7 +27,9 @@ class AddItemToCartController extends Controller
             $product = Product::query()->find($request->input('product_id'));
             $quantity = $request->filled('qty') ? $request->qty : 1;
 
-            $cart = $helper->getCart($request);
+            $user = $request->user();
+            $sessionId = $request->session()->getId();
+            $cart = $helper->getCart($user, $sessionId);
 
             if ($quantity < 1) {
                 $helper->removeItem($cart, $product->id);
@@ -58,8 +61,8 @@ class AddItemToCartController extends Controller
                 }
 
                 $cartItem->save();
-                $cart->touch();
             });
+            $cart->touch();
             return response()->json(['success' => true]);
         } catch (\Throwable $th) {
             report($th);

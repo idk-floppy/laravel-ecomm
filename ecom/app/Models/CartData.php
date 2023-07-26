@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -19,16 +20,17 @@ class CartData extends Model
         return $this->hasMany(CartItems::class);
     }
 
-    public function getCart(Request $request)
+    public function getCart($user = null, $sessionId)
     {
-        $user = $request->user();
-        $sessionId = $request->session()->getId();
-
         if ($user) {
             $cart = CartData::firstOrCreate(['user_id' => $user->id]);
         } else {
             $cart = CartData::firstOrCreate(['session_id' => $sessionId]);
         }
+
+        $cart->load('items');
+
+        Log::info($cart);
 
         return $cart;
     }

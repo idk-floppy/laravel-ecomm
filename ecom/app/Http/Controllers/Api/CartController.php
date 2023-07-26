@@ -14,16 +14,16 @@ class CartController extends Controller
 {
     public function getItems(Request $request, CartData $helper)
     {
-        $cart = $helper->getCart($request);
-
-        return $cart->with('items')->first();
+        $user = $request->user();
+        $sessionId = $request->session()->getId();
+        $cart = $helper->getCart($user, $sessionId);
+        return $cart;
     }
 
     public function removeItem(Request $request, CartData $helper)
     {
         try {
             $cart = $helper->getCart($request);
-            Log::info($request->product_id);
             $helper->removeItem($cart, $request->product_id);
         } catch (\Throwable $th) {
             report($th);
