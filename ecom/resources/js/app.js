@@ -2,12 +2,13 @@ import './bootstrap';
 import { createApp } from 'vue';
 import ProductsGrid from './components/ProductsGrid.vue';
 import ProductForm from './components/ProductForm.vue';
-import ProductEditForm from './components/ProductEditForm.vue';
 import ProductCard from './components/ProductCard.vue';
 import Cart from './components/Cart.vue';
 import NavItem from './components/NavItem.vue';
 import Navbar from './components/Navbar.vue';
+import LoadingOverlay from './components/LoadingOverlay.vue';
 import mitt from 'mitt';
+
 // import { vue3Debounce } from 'vue-debounce';
 
 import VueSweetalert2 from 'vue-sweetalert2';
@@ -22,18 +23,7 @@ axios.defaults.baseURL = window.location.origin;
 const emitter = mitt();
 window.emitter = emitter;
 
-// import ErrorAlert from './swalAlerts';
-
 const app = createApp({
-    components: {
-        'products-grid': ProductsGrid,
-        'product-form': ProductForm,
-        'product-update-form': ProductEditForm,
-        'product-card': ProductCard,
-        'cart': Cart,
-        'navitem': NavItem,
-        'navbar': Navbar,
-    },
     data() {
         //
     },
@@ -69,5 +59,14 @@ app.use(ToastPlugin, {
     position: 'top-right',
     duration: 3000,
 });
+
+app.component('loading-overlay', LoadingOverlay);
+app.component('products-grid', ProductsGrid);
+app.component('product-form', ProductForm);
+app.component('product-card', ProductCard);
+app.component('cart', Cart);
+app.component('navitem', NavItem);
+app.component('navbar', Navbar);
+
 // app.directive('debounce', vue3Debounce({ lock: true, defaultTime: '400ms' }));
 app.mount('#app');

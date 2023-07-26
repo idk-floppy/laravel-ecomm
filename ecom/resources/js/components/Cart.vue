@@ -1,8 +1,7 @@
 <template>
   <div>
-    <div v-if="loading" class="spinner-container">
-      <div class="spinner-border" role="status"></div>
-    </div>
+    <loading-overlay v-if="loading"></loading-overlay>
+
     <div class="table-responsive">
       <table
         class="table table-striped table-hover"

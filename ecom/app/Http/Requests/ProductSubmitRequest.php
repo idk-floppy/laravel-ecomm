@@ -23,7 +23,7 @@ class ProductSubmitRequest extends BaseProductSubmitRequest
     public function rules(): array
     {
         return array_merge(parent::rules(), [
-            "image" => ['required', 'image', 'mimes:jpeg,png', 'max:5120'],
+            "image" => ['required'],
         ]);
     }
 }

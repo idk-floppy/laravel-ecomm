@@ -24,6 +24,7 @@ abstract class BaseProductSubmitRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'min:3', 'max:255'],
             'price' => ['required', 'numeric', 'min:0', 'integer'],
+            'image' => ['image', 'mimes:jpeg,png,jpg', 'max:10240'],
         ];
     }
 }

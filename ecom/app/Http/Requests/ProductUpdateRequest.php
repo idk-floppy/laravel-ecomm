@@ -24,7 +24,7 @@ class ProductUpdateRequest extends BaseProductSubmitRequest
     public function rules(): array
     {
         return array_merge(parent::rules(), [
-            "image" => ['nullable', 'sometimes', 'image', 'mimes:jpeg,png', 'max:5120'],
+            "image" => ['nullable', 'sometimes'],
         ]);
     }
 }

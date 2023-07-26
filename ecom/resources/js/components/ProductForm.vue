@@ -1,5 +1,8 @@
 <template>
   <div>
+    <loading-overlay v-if="loading"></loading-overlay>
+
+    <div>
     <form
       method="post"
       enctype="multipart/form-data"
@@ -47,7 +50,7 @@
               name="image"
               id="image"
               class="form-control"
-              required
+              :required="isCreateMode"
               ref="image"
               :class="{ 'is-invalid': this.errors && this.errors.image }"
             />
@@ -55,7 +58,7 @@
         </div>
         <div class="row py-2">
           <div class="col-sm col-md-3">
-            <input type="submit" value="Create" class="btn btn-primary" />
+            <input type="submit" :value="isCreateMode ? 'Create' : 'Save'" class="btn btn-primary" />
           </div>
         </div>
       </div>
@@ -65,47 +68,77 @@
         <a>{{ error[0] }}</a>
       </div>
     </div>
+</div>
   </div>
 </template>
 <script>
+import { submitEditProductForm } from './services/SubmitEditProductForm';
 import { submitProductForm } from "./services/SubmitProductForm";
 
 export default {
+    props: {
+        isCreateMode: {
+            type: Boolean,
+            required: true,
+            default: true
+        },
+        productId: {
+            type: Number,
+        }
+    },
   data() {
     return {
-      name: "",
-      price: 0,
-      errors: null,
-      success: null,
+        name: "",
+        price: 0,
+        errors: null,
+        loading: true
     };
   },
+  async created(){
+    if (!this.isCreateMode)
+        await this.fetchProductData(this.productId);
+    this.loading = false;
+},
   methods: {
-    async submitForm() {
-      let formData = new FormData();
-      formData.append("image", this.$refs.image.files[0]);
-      formData.append("name", this.name);
-      formData.append("price", this.price);
-      let response = await submitProductForm(formData)
-        .then((response) => {
-          return response;
-        })
-        .catch((error) => {
-          this.errors = error.response.data.errors;
-          this.success = false;
+    async fetchProductData(productId){
+        axios.get(`api/products/${productId}`)
+        .then((response)=>{
+            this.name = response['data']['name'];
+            this.price = response['data']['price'];
         });
-
-      if (response.success) {
-        this.$swal
-          .fire({
-            icon: "success",
-            title: "Success",
-            text: "Product successfully created",
-          })
-          .then(() => {
-            window.location.href = response.product;
-          });
-      }
     },
-  },
+    async submitForm() {
+        this.loading = true;
+        let formData = new FormData();
+        if (typeof this.$refs.image.files[0] !== "undefined") {
+            formData.append("image", this.$refs.image.files[0]);
+        }
+        formData.append("name", this.name);
+        formData.append("price", this.price);
+        if (!this.isCreateMode)
+            formData.append("_method", "PATCH");
+        let response;
+
+        try {
+        response = this.isCreateMode ? await submitProductForm(formData) : await submitEditProductForm(formData, this.productId);
+        } catch (error) {
+            console.log(error.response.data.errors);
+            this.errors = error.response.data.errors;
+            this.loading = false;
+            return 0;
+        } finally{
+            this.loading = false;
+        }
+        this.$swal
+            .fire({
+                icon: "success",
+                title: "Success",
+                text: "Product successfully created",
+            })
+            .then(() => {
+                window.location.href = response.product;
+            });
+    },
+},
 };
 </script>
