@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class AddItemToCartController extends Controller
 {
@@ -27,18 +28,19 @@ class AddItemToCartController extends Controller
             $product = Product::query()->find($request->input('product_id'));
             $quantity = $request->filled('qty') ? $request->qty : 1;
 
-            $user = $request->user();
+            $userId = Auth::check() ? Auth::user()->id : null;
             $sessionId = $request->session()->getId();
-            $cart = $helper->getCart($user, $sessionId);
-
-            if ($quantity < 1) {
-                $helper->removeItem($cart, $product->id);
-                return response()->json(['success' => true]);
-            }
 
             $addOrSet = $request->input('addOrSet');
 
-            DB::transaction(function () use ($product, $addOrSet, $quantity, $cart) {
+            DB::transaction(function () use ($product, $addOrSet, $quantity, $helper, $userId, $sessionId) {
+                $cart = $helper->getCart($userId, $sessionId);
+
+                if ($quantity < 1) {
+                    $helper->removeItem($cart, $product->id);
+                    return response()->json(['success' => true]);
+                }
+
                 $cartItem = $cart->items()->firstOrCreate(
                     [
                         'product_id' => $product->id
@@ -61,8 +63,8 @@ class AddItemToCartController extends Controller
                 }
 
                 $cartItem->save();
+                $cart->touch();
             });
-            $cart->touch();
             return response()->json(['success' => true]);
         } catch (\Throwable $th) {
             report($th);

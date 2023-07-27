@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\DB;
 
 class CartData extends Model
 {
@@ -20,14 +21,13 @@ class CartData extends Model
         return $this->hasMany(CartItems::class);
     }
 
-    public function getCart($user = null, $sessionId)
+    public function getCart($userId = null, $sessionId = null)
     {
-        if ($user) {
-            $cart = CartData::firstOrCreate(['user_id' => $user->id]);
+        if ($userId) {
+            $cart = CartData::firstOrCreate(['user_id' => $userId]);
         } else {
-            $cart = CartData::firstOrCreate(['session_id' => $sessionId]);
+            $cart = CartData::firstOrCreate(['session_id' => $sessionId, 'user_id' => $userId]);
         }
-
         $cart->load('items');
         return $cart;
     }
@@ -35,5 +35,30 @@ class CartData extends Model
     public function removeItem(CartData $cart, $product_id)
     {
         $cart->items()->where('product_id', $product_id)->delete();
+    }
+
+    public function deleteCart(CartData $cart)
+    {
+        $cart->items()->delete();
+        $cart->delete();
+    }
+
+    public function swapCartWithAnother(CartData $cartWithSessionId, CartData $cartWithUserId, $userId)
+    {
+        Log::info("Current cart" . $cartWithSessionId);
+        Log::info("usered cart" . $cartWithUserId);
+
+        if (!$cartWithSessionId->items()->exists()) {
+            $cartWithSessionId->delete();
+            return 0;
+        }
+
+        DB::transaction(function () use ($cartWithSessionId, $cartWithUserId, $userId) {
+            Log::info("session id cart: " . $cartWithSessionId);
+            $this->deleteCart($cartWithUserId);
+            $cartWithSessionId->user_id = $userId;
+            $cartWithSessionId->save();
+        });
+        Log::info("session id cart: " . $cartWithSessionId);
     }
 }

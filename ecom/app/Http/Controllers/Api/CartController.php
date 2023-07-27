@@ -9,21 +9,24 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
     public function getItems(Request $request, CartData $helper)
     {
-        $user = $request->user();
+        $userId = Auth::check() ? Auth::user()->id : null;
         $sessionId = $request->session()->getId();
-        $cart = $helper->getCart($user, $sessionId);
+        $cart = $helper->getCart($userId, $sessionId);
         return $cart;
     }
 
     public function removeItem(Request $request, CartData $helper)
     {
+        $userId = Auth::check() ? Auth::user()->id : null;
+        $sessionId = $request->session()->getId();
         try {
-            $cart = $helper->getCart($request);
+            $cart = $helper->getCart($userId, $sessionId);
             $helper->removeItem($cart, $request->product_id);
         } catch (\Throwable $th) {
             report($th);

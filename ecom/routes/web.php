@@ -25,8 +25,6 @@ use App\Models\Product;
 
 Auth::routes();
 
-// Route::resource('/products', ProductController::class);
-
 Route::group(['controller' => ProductController::class, 'prefix' => 'products', 'as' => 'products.'], function () {
     Route::get('/create', 'create')->name('create');
     Route::get('/{product}', 'show')->name('show');
