@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('cart_data', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('user_id')->nullable();
+            $table->bigInteger('user_id')->constrained('users', 'id')->onDelete("cascade")->nullable();
             $table->string('session_id')->nullable();
             $table->timestamps();
         });

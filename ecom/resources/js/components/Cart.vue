@@ -37,6 +37,7 @@
                 ref="qtyInput"
                 @blur="hideQuantityInput(cartItem)"
                 @keyup.enter="hideQuantityInput(cartItem)"
+                min="1"
               />
               <p v-else>{{ cartItem.qty }}</p>
             </td>
@@ -120,27 +121,17 @@ export default {
           console.log(error);
         });
     },
-    /**
-     * It's called in vue components, e.g. :name="formatQtyInputName(item.product_id)"
-     * @param {integer} id the product_id from the item object.
-     */
+
     formatQtyInputName(id) {
       return String(id) + "-qty";
     },
-    /**
-     *
-     * @param {Object} item that has: id, cart_data_id, product_id, qty, product_data(json).
-     */
+
     showQuantityInput(item) {
       item.showQuantityField = true;
       this.$nextTick(() => {
         this.$refs.qtyInput[0].focus();
       });
     },
-    /**
-     *
-     * @param {Object} item that has: id, cart_data_id, product_id, qty, product_data(json).
-     */
     async hideQuantityInput(item) {
       let newQty = this.$refs.qtyInput[0].value;
       item.showQuantityField = false;
@@ -152,7 +143,7 @@ export default {
     async updateQuantityByField(product, qty) {
       this.loading = true;
       let productToUpdate = JSON.parse(product);
-      const response = await addToCart(productToUpdate.id, qty, "set");
+      let response = await addToCart(productToUpdate.id, qty, "set");
       if (response) {
         this.$toast.success(productToUpdate.name + " updated");
       } else {
@@ -187,22 +178,3 @@ export default {
   },
 };
 </script>
-<style scoped>
-.spinner-container {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.25);
-}
-
-.spinner-border {
-  width: 50px;
-  height: 50px;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  margin: -25px 0 0 -25px;
-}
-</style>

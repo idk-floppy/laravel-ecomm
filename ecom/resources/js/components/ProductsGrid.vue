@@ -1,5 +1,7 @@
 <template>
-  <div class="container">
+<div>
+    <loading-overlay v-if="loading" overlay="fullscreen"></loading-overlay>
+    <div class="container">
     <div class="row mb-4 g-0">
       <div class="card">
         <div class="card-body">
@@ -99,6 +101,7 @@
       </ul>
     </nav>
   </div>
+</div>
 </template>
 <script>
 import ProductCard from "./ProductCard.vue";
@@ -117,6 +120,7 @@ export default {
       orderBy: "name",
       minPrice: null,
       maxPrice: null,
+      loading: true,
     };
   },
   methods: {
@@ -127,6 +131,7 @@ export default {
       orderBy = "name",
       url = "/api/products"
     ) {
+        this.loading = true;
       await axios
         .get(url, {
           params: {
@@ -141,6 +146,7 @@ export default {
           this.meta = response.data.meta;
           this.links = response.data.links;
         });
+        this.loading = false;
     },
     filterProducts() {
       return this.getProducts(

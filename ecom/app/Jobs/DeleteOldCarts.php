@@ -32,8 +32,7 @@ class DeleteOldCarts implements ShouldQueue
         $listOfCartsToDelete = CartData::where("updated_at", "<", Carbon::now()->subSecond())->get();
 
         foreach ($listOfCartsToDelete as $cart) {
-            $cart->items()->delete();
-            $cart->delete();
+            $cart->deleteCart();
         }
     }
 }

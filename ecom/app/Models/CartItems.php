@@ -16,4 +16,12 @@ class CartItems extends Model
     {
         return $this->belongsTo(CartData::class);
     }
+
+    public function getSubtotalAttribute()
+    {
+        $productData = json_decode($this->product_data);
+        $price = $productData->price;
+
+        return $this->qty * $price;
+    }
 }

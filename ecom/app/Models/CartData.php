@@ -32,15 +32,15 @@ class CartData extends Model
         return $cart;
     }
 
-    public function removeItem(CartData $cart, $product_id)
+    public function removeItem($product_id)
     {
-        $cart->items()->where('product_id', $product_id)->delete();
+        $this->items()->where('product_id', $product_id)->delete();
     }
 
-    public function deleteCart(CartData $cart)
+    public function deleteCart()
     {
-        $cart->items()->delete();
-        $cart->delete();
+        $this->items()->delete();
+        $this->delete();
     }
 
     public function swapCartWithAnother(CartData $cartWithSessionId, CartData $cartWithUserId, $userId)
@@ -51,9 +51,21 @@ class CartData extends Model
         }
 
         DB::transaction(function () use ($cartWithSessionId, $cartWithUserId, $userId) {
-            $this->deleteCart($cartWithUserId);
+            $cartWithUserId->deleteCart();
             $cartWithSessionId->user_id = $userId;
+            $cartWithSessionId->session_id = null;
             $cartWithSessionId->save();
         });
+    }
+
+    public function getTotalAttribute()
+    {
+        $items = $this->items;
+        $total = 0;
+
+        foreach ($items as $item) {
+            $total += $item->subtotal;
+        }
+        return $total;
     }
 }

@@ -24,12 +24,17 @@ class CartController extends Controller
 
     public function removeItem(Request $request, CartData $helper)
     {
+        $this->validate($request, [
+            'product_id' => 'required|numeric'
+        ]);
+
         $userId = Auth::check() ? Auth::user()->id : null;
         $sessionId = $request->session()->getId();
 
         try {
             $cart = $helper->getCart($userId, $sessionId);
-            $helper->removeItem($cart, $request->product_id);
+
+            $cart->removeItem($request->product_id);
         } catch (\Throwable $th) {
             report($th);
             return response()->json(['success' => false]);
