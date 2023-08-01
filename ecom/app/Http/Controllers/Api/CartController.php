@@ -17,6 +17,7 @@ class CartController extends Controller
     {
         $userId = Auth::check() ? Auth::user()->id : null;
         $sessionId = $request->session()->getId();
+
         $cart = $helper->getCart($userId, $sessionId);
         return $cart;
     }
@@ -25,6 +26,7 @@ class CartController extends Controller
     {
         $userId = Auth::check() ? Auth::user()->id : null;
         $sessionId = $request->session()->getId();
+
         try {
             $cart = $helper->getCart($userId, $sessionId);
             $helper->removeItem($cart, $request->product_id);

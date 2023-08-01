@@ -57,9 +57,14 @@ class ApiProductsController extends Controller
         try {
             $img = $request->file('image')->store('images', 'public');
             $data = $request->post();
+
             $product = DB::transaction(function () use ($data, $img) {
-                return Product::create(['name' => $data['name'], 'price' => $data['price'], 'image' => $img]);;
+                return Product::create(['name' => $data['name'], 'price' => $data['price'], 'image' => $img]);
             });
+
+            // We return a success and the route to view the product's page.
+            // I might remove the 'product' since this is an api controller, if another frontend would connect to it, the route would be completely useless..
+            // TODO reconsider returning 'product'
             return response()->json(['success' => true, 'product' => route('products.show', $product->id)]);
         } catch (\Throwable $th) {
             report($th);

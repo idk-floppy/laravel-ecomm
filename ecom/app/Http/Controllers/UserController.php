@@ -66,6 +66,6 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        //
+        // We didn't specify anything about modifying or deleting users, so for now I'll leave this as is.
     }
 }

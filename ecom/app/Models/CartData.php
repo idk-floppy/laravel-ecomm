@@ -45,20 +45,15 @@ class CartData extends Model
 
     public function swapCartWithAnother(CartData $cartWithSessionId, CartData $cartWithUserId, $userId)
     {
-        Log::info("Current cart" . $cartWithSessionId);
-        Log::info("usered cart" . $cartWithUserId);
-
         if (!$cartWithSessionId->items()->exists()) {
             $cartWithSessionId->delete();
             return 0;
         }
 
         DB::transaction(function () use ($cartWithSessionId, $cartWithUserId, $userId) {
-            Log::info("session id cart: " . $cartWithSessionId);
             $this->deleteCart($cartWithUserId);
             $cartWithSessionId->user_id = $userId;
             $cartWithSessionId->save();
         });
-        Log::info("session id cart: " . $cartWithSessionId);
     }
 }

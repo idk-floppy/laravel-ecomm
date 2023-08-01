@@ -29,7 +29,6 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        Log::info($product);
         return view('products.show', ['product' => $product]);
     }
 
