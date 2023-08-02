@@ -28,13 +28,13 @@ class CartData extends Model
         } else {
             $cart = CartData::firstOrCreate(['session_id' => $sessionId, 'user_id' => $userId]);
         }
-        $cart->load('items');
+        $cart->load('items.product');
         return $cart;
     }
 
-    public function removeItem($product_id)
+    public function removeItem($cartitem_id)
     {
-        $this->items()->where('product_id', $product_id)->delete();
+        $this->items()->where('id', $cartitem_id)->delete();
     }
 
     public function deleteCart()

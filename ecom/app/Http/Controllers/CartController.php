@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\CartData;
@@ -25,7 +25,7 @@ class CartController extends Controller
     public function removeItem(Request $request, CartData $helper)
     {
         $this->validate($request, [
-            'product_id' => 'required|numeric'
+            'cartitem_id' => 'required|numeric'
         ]);
 
         $userId = Auth::check() ? Auth::user()->id : null;
@@ -34,7 +34,7 @@ class CartController extends Controller
         try {
             $cart = $helper->getCart($userId, $sessionId);
 
-            $cart->removeItem($request->product_id);
+            $cart->removeItem($request->cartitem_id);
         } catch (\Throwable $th) {
             report($th);
             return response()->json(['success' => false]);

@@ -63,7 +63,7 @@
     </div>
     <div class="row row-cols-1 row-cols-md-3 g-3 mb-4">
       <div v-for="product in products" :key="product.id" :product="product">
-        <ProductCard :product="product"></ProductCard>
+        <product-card :id="product.id" :name="product.name" :price="product.price" :image="product.image"></product-card>
       </div>
     </div>
 

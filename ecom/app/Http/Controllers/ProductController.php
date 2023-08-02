@@ -27,16 +27,16 @@ class ProductController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Product $product)
+    public function show($product_id)
     {
-        return view('products.show', ['product' => $product]);
+        return view('products.show', ['product_id' => $product_id]);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Product $product)
+    public function edit($product_id)
     {
-        return view('products.edit', ['productid' => $product->id]);
+        return view('products.edit', ['product_id' => $product_id]);
     }
 }

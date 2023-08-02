@@ -1,13 +1,13 @@
 <?php
 
-use App\Http\Controllers\Api\Cart\AddItemToCartController;
+use App\Http\Controllers\Cart\AddItemToCartController;
 use App\Models\Order;
 use App\Models\CartData;
 use App\Models\CartItems;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\CartController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserController;
 use App\Models\Product;

@@ -9,7 +9,7 @@
         <div class="row">
             <div class="card col-md">
                 <div class="card-body">
-                    <product-form :is-create-mode="false" :product-id="{{ $productid }}"></product-form>
+                    <product-form :is-create-mode="false" :product-id="{{ $product_id }}"></product-form>
                 </div>
             </div>
         </div>

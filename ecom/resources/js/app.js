@@ -7,6 +7,7 @@ import Cart from './components/Cart.vue';
 import NavItem from './components/NavItem.vue';
 import Navbar from './components/Navbar.vue';
 import LoadingOverlay from './components/LoadingOverlay.vue';
+import ProductSingleSheet from './components/ProductSingleSheet.vue';
 import mitt from 'mitt';
 
 // import { vue3Debounce } from 'vue-debounce';
@@ -64,6 +65,7 @@ app.component('loading-overlay', LoadingOverlay);
 app.component('products-grid', ProductsGrid);
 app.component('product-form', ProductForm);
 app.component('product-card', ProductCard);
+app.component('product-single-sheet', ProductSingleSheet);
 app.component('cart', Cart);
 app.component('navitem', NavItem);
 app.component('navbar', Navbar);

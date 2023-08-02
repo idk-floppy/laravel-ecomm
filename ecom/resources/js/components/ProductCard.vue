@@ -1,21 +1,21 @@
 <template>
   <CardBase>
     <template v-slot:image
-      ><img :src="getProductImage(product.image)" class="card-img-top"
+      ><img :src="this.image" class="card-img-top"
     /></template>
     <template v-slot:title
       ><h5 class="card-title">
-        <span role="button" @click="showProduct(product.id)"
-          >{{ product.name }}</span
+        <span role="button" @click="showProduct(id)"
+          >{{ name }}</span
         >
       </h5></template
     >
     <template v-slot:details>{{ productPrice }}</template>
     <template v-slot:buttons>
-      <AddToCartButton :product="product" />
+      <AddToCartButton :product_id="id" :product_name="name"/>
       <div v-if="authenticated" class="btn-group">
-        <EditItemButton :product="product" />
-        <DeleteItemButton :product="product" />
+        <EditItemButton :product_id="id" />
+        <DeleteItemButton :product_id="id" />
       </div>
     </template>
   </CardBase>
@@ -26,6 +26,7 @@ import EditItemButton from "./EditItemButton.vue";
 import DeleteItemButton from "./DeleteItemButton.vue";
 import CardBase from "./CardBase.vue";
 
+
 export default {
   components: {
     AddToCartButton,
@@ -34,24 +35,21 @@ export default {
     CardBase,
   },
   props: {
-    product: Object,
+    id: Number,
+    name: String,
+    price: Number,
+    image: String,
   },
   inject: ["authenticated"],
   methods: {
     showProduct(id) {
       return (window.location.href = "/products/" + id);
     },
-    getProductImage(image) {
-      if (image) {
-        return window.location.origin + "/storage/" + image;
-      }
-      return null;
-    },
   },
   computed: {
     productPrice() {
       return (
-        this.product.price.toLocaleString("hu-HU", { useGrouping: true }) +
+        this.price.toLocaleString("hu-HU", { useGrouping: true }) +
         " Ft"
       );
     },

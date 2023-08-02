@@ -133,10 +133,10 @@ export default {
             .fire({
                 icon: "success",
                 title: "Success",
-                text: "Product successfully created",
+                text: `Product successfully created!`,
             })
-            .then(() => {
-                window.location.href = response.product;
+            .then(()=>{
+                return window.location = window.location.origin + '/products/' + response.data.id;
             });
     },
 },

@@ -21,7 +21,7 @@
             <td>
               <button
                 class="btn btn-danger"
-                @click="removeFromCart(cartItem.product_id)"
+                @click="removeFromCart(cartItem.id)"
               >
                 Remove
               </button>
@@ -42,10 +42,10 @@
               <p v-else>{{ cartItem.qty }}</p>
             </td>
             <td>
-              {{ formatPrice(productPrice(cartItem)) }}
+              {{ formatPrice(cartItem.product.price) }}
             </td>
             <td>
-              {{ formatPrice(productPrice(cartItem) * cartItem.qty) }}
+              {{ formatPrice(cartItem.product.price * cartItem.qty) }}
             </td>
           </tr>
           <tr>
@@ -88,37 +88,24 @@ export default {
     async calculateTotal() {
       let total = 0;
 
-      for (let index = 0; index < this.items.length; index++) {
-        const item = this.items[index];
-        try {
-          const data = JSON.parse(item.product_data);
-          if (data && typeof data.price === "number") {
-            total += item.qty * data.price;
-          } else {
-            throw new Error("Invalid product data");
-          }
-        } catch (error) {
-          console.error("Something went wrong!");
-          console.error(error);
-          return emitter.emit("requestErrorPopup");
-        }
-      }
+      this.items.forEach(item => {
+        total += item.qty * item.product.price;
+      });
+
       this.total = total;
     },
-    async removeFromCart(product_id) {
+    async removeFromCart(cartitem_id) {
         this.loading = true;
       await axios
-        .post("cart/remove", { product_id: product_id })
+        .post("cart/remove", { cartitem_id: cartitem_id })
         .then(async (response) => {
           if (!response.data["success"]) {
             this.loading = false;
             return emitter.emit("requestErrorPopup");
           }
             await this.getItems();
+            await this.calculateTotal();
             this.loading = false;
-        })
-        .catch((error) => {
-          console.log(error);
         });
     },
 
@@ -136,21 +123,23 @@ export default {
       let newQty = this.$refs.qtyInput[0].value;
       item.showQuantityField = false;
       if (newQty != item.qty) {
-        await this.updateQuantityByField(item.product_data, newQty);
+        await this.updateQuantityByField(item, newQty);
         await this.calculateTotal();
       }
     },
-    async updateQuantityByField(product, qty) {
+    async updateQuantityByField(item, qty) {
       this.loading = true;
-      let productToUpdate = JSON.parse(product);
-      let response = await addToCart(productToUpdate.id, qty, "set");
-      if (response) {
-        this.$toast.success(productToUpdate.name + " updated");
-      } else {
+      let response = await addToCart(item.product.id, qty, "set");
+      if (!response) {
+        await this.getItems();
+        this.loading = false;
         emitter.emit("requestErrorPopup");
+        return 0;
       }
+
       await this.getItems();
       this.loading = false;
+      this.$toast.success(item.product.name + " updated");
     },
     formatPrice(price) {
       return price.toLocaleString("hu-HU") + " Ft";
@@ -162,12 +151,7 @@ export default {
     },
     productName: function () {
       return function (cartItem) {
-        return JSON.parse(cartItem.product_data).name;
-      };
-    },
-    productPrice: function () {
-      return function (cartItem) {
-        return JSON.parse(cartItem.product_data).price;
+        return cartItem.product.name;
       };
     },
   },

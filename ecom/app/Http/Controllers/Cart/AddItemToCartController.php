@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\Cart;
+namespace App\Http\Controllers\Cart;
 
 use App\Models\Product;
 use App\Models\CartData;
@@ -21,16 +21,13 @@ class AddItemToCartController extends Controller
         try {
 
             // Check if the product exists. If it doesn't, just report it and throw a false success.
-            // Just for safety tho.
             if (!(Product::query()->find($request->input('product_id'))->exists())) {
-                report('Item does not exist');
-                return response()->json(['success' => false]);
+                return response()->json(['success' => false, 'message' => 'Product does not exist']);
             }
 
             $product = Product::query()->find($request->input('product_id'));
             $quantity = $request->filled('qty') ? $request->qty : 1;
 
-            // Get the userID and the session ID. We need to set it to either the user's ID or null, so when we query the cart, it can jump straight to finding it by sessionID.
             $userId = Auth::check() ? Auth::user()->id : null;
             $sessionId = $request->session()->getId();
 
@@ -53,10 +50,6 @@ class AddItemToCartController extends Controller
                         'qty' => 0,
                     ]
                 );
-
-                // We store the product data in json, so we don't do unnecessary queries for the product name, price, etc.
-                // Tho it might not be the best thing to do, it only refreshes when you modify the quantity in the cart.
-                $cartItem->product_data = $product;
 
                 switch ($addOrSet) {
                     case 'set':

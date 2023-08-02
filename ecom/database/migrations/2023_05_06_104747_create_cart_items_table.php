@@ -16,7 +16,6 @@ return new class extends Migration
             $table->bigInteger('cart_data_id')->constrained('cart_data', 'id')->onDelete("cascade");
             $table->bigInteger('product_id')->constrained('product', 'id')->onDelete("cascade");
             $table->bigInteger('qty');
-            $table->json('product_data')->nullable();
             $table->timestamps();
         });
     }

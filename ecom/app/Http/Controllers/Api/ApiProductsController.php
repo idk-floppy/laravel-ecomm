@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Redirect;
 use App\Http\Requests\ProductSubmitRequest;
 use App\Http\Requests\ProductUpdateRequest;
+use Illuminate\Support\Facades\Log;
 
 class ApiProductsController extends Controller
 {
@@ -56,16 +57,14 @@ class ApiProductsController extends Controller
     {
         try {
             $img = $request->file('image')->store('images', 'public');
+            $imgUrl = url('storage/' . $img);
             $data = $request->post();
 
-            $product = DB::transaction(function () use ($data, $img) {
-                return Product::create(['name' => $data['name'], 'price' => $data['price'], 'image' => $img]);
+            $product = DB::transaction(function () use ($data, $imgUrl) {
+                return Product::create(['name' => $data['name'], 'price' => $data['price'], 'image' => $imgUrl]);
             });
 
-            // We return a success and the route to view the product's page.
-            // I might remove the 'product' since this is an api controller, if another frontend would connect to it, the route would be completely useless..
-            // TODO reconsider returning 'product'
-            return response()->json(['success' => true, 'product' => route('products.show', $product->id)]);
+            return response()->json(['success' => true, 'data' => $product]);
         } catch (\Throwable $th) {
             report($th);
             return response()->json(['success' => false]);
@@ -93,13 +92,14 @@ class ApiProductsController extends Controller
                         Storage::delete($product->image);
                     }
                     $img = $request->file('image')->store('images', 'public');
-                    $product->image = $img;
+                    $imgUrl = url('storage/' . $img);
+                    $product->image = $imgUrl;
                 }
                 $product->name = $data['name'];
                 $product->price = $data['price'];
                 $product->save();
             });
-            return response()->json(['success' => true, 'product' => route('products.show', $product->id)]);
+            return response()->json(['success' => true, 'data' => $product]);
         } catch (\Throwable $th) {
             report($th);
             return response()->json(['success' => false]);
