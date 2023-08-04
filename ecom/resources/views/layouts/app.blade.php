@@ -81,6 +81,16 @@
             </div>
             @yield('content')
         </main>
+        <div class="container-fluid bg-white">
+            <footer class="py-3 my-4">
+                <ul class="nav justify-content-center border-bottom pb-3 mb-3">
+                    <navitem url="https://github.com/idk-floppy" :linkclass="'text-muted'">Github</navitem>
+                </ul>
+                <p class="text-center text-muted">2023 &copy;
+                    <link url="https://github.com/idk-floppy" :linkclass="'text-muted'">idk-floppy</link>
+                </p>
+            </footer>
+        </div>
     </div>
     <script>
         window.authenticated = @json(auth()->check());

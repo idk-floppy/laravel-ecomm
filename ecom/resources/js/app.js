@@ -8,6 +8,7 @@ import NavItem from './components/NavItem.vue';
 import Navbar from './components/Navbar.vue';
 import LoadingOverlay from './components/LoadingOverlay.vue';
 import ProductSingleSheet from './components/ProductSingleSheet.vue';
+import LinkComponent from './components/LinkComponent.vue';
 import mitt from 'mitt';
 
 // import { vue3Debounce } from 'vue-debounce';
@@ -68,6 +69,7 @@ app.component('product-card', ProductCard);
 app.component('product-single-sheet', ProductSingleSheet);
 app.component('cart', Cart);
 app.component('navitem', NavItem);
+app.component('link', LinkComponent);
 app.component('navbar', Navbar);
 
 // app.directive('debounce', vue3Debounce({ lock: true, defaultTime: '400ms' }));

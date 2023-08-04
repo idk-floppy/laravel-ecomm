@@ -1,6 +1,6 @@
 <template>
   <li class="nav-item">
-    <a class="nav-link" :href="url">
+    <a :class="['nav-link', linkclass]" :href="url">
       <slot>Link</slot>
     </a>
   </li>
@@ -12,6 +12,10 @@ export default {
       type: String,
       default: "#",
     },
+    linkclass: {
+        type: String,
+        default: "",
+    }
   },
 };
 </script>

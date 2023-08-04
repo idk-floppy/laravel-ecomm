@@ -57,6 +57,9 @@
           </div>
         </div>
         <div class="row py-2">
+            <text-input></text-input>
+        </div>
+        <div class="row py-2">
           <div class="col-sm col-md-3">
             <input type="submit" :value="isCreateMode ? 'Create' : 'Save'" class="btn btn-primary" />
           </div>
