@@ -27,10 +27,10 @@ export default {
     },
     async created() {
         await this.fetchProduct(this.product_id)
-        .then(async (product)=>{
-            this.name = product.data.name;
-            this.price = product.data.price;
-            this.image = product.data.image;
+        .then(async (response)=>{
+            this.name = response.data.product.name;
+            this.price = response.data.product.price;
+            this.image = response.data.product.image;
         });
     },
 }

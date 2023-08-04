@@ -27,20 +27,20 @@ class ApiProductsController extends Controller
      */
     public function index()
     {
-        $search = request('search');
+        $name = request('search');
         $orderBy = request('orderBy');
         $minPrice = request('minPrice');
         $maxPrice = request('maxPrice');
 
         $products = Product::query()
-            ->when($search, function ($query, $search) {
-                return $query->where('name', 'like', "%" . $search . "%");
+            ->when($name, function ($query, $name) {
+                return $query->filterByName($name);
             })
             ->when($minPrice, function ($query, $minPrice) {
-                return $query->where('price', '>=', $minPrice);
+                return $query->filterByMinPrice($minPrice);
             })
             ->when($maxPrice, function ($query, $maxPrice) {
-                return $query->where('price', '<=', $maxPrice);
+                return $query->filterByMaxPrice($maxPrice);
             })
             ->when($orderBy, function ($query, $orderBy) {
                 return $query->orderBy($orderBy, 'ASC');
@@ -56,8 +56,7 @@ class ApiProductsController extends Controller
     public function store(ProductSubmitRequest $request)
     {
         try {
-            $img = $request->file('image')->store('images', 'public');
-            $imgUrl = url('storage/' . $img);
+            $imgUrl = $request->file('image')->store('images', 'public');
             $data = $request->post();
 
             $product = DB::transaction(function () use ($data, $imgUrl) {
@@ -76,7 +75,7 @@ class ApiProductsController extends Controller
      */
     public function show(Product $product)
     {
-        return $product;
+        return response()->json(['product' => new ProductResource($product)]);
     }
 
     /**
@@ -84,15 +83,15 @@ class ApiProductsController extends Controller
      */
     public function update(ProductUpdateRequest $request, Product $product)
     {
-        $data = $request->post();
+        $data = $request->validated();
+
         try {
             DB::transaction(function () use ($data, $product, $request) {
                 if ($request->file('image')) {
                     if ($product->image) {
                         Storage::delete($product->image);
                     }
-                    $img = $request->file('image')->store('images', 'public');
-                    $imgUrl = url('storage/' . $img);
+                    $imgUrl = $request->file('image')->store('images', 'public');
                     $product->image = $imgUrl;
                 }
                 $product->name = $data['name'];

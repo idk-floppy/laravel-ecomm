@@ -13,6 +13,7 @@ class CartItems extends Model
 
     public $guarded = [];
 
+    // Relations
     public function cart()
     {
         return $this->belongsTo(CartData::class);
@@ -23,6 +24,7 @@ class CartItems extends Model
         return $this->belongsTo(Product::class);
     }
 
+    // Attributes
     public function getSubtotalAttribute()
     {
         $productData = json_decode($this->product_data);

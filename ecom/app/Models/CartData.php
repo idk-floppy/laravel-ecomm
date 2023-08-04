@@ -16,11 +16,13 @@ class CartData extends Model
 
     public $fillable = ['user_id', 'session_id'];
 
+    // Relations
     public function items()
     {
         return $this->hasMany(CartItems::class);
     }
 
+    // Methods
     public function getCart($userId = null, $sessionId = null)
     {
         if ($userId) {
@@ -58,6 +60,7 @@ class CartData extends Model
         });
     }
 
+    // Attributes
     public function getTotalAttribute()
     {
         $items = $this->items;

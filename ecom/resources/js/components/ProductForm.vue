@@ -103,8 +103,8 @@ export default {
     async fetchProductData(productId){
         axios.get(`api/products/${productId}`)
         .then((response)=>{
-            this.name = response['data']['name'];
-            this.price = response['data']['price'];
+            this.name = response.data.product.name;
+            this.price = response.data.product.price;
         });
     },
     async submitForm() {
