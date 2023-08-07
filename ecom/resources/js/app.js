@@ -1,5 +1,6 @@
 import './bootstrap';
 import { createApp } from 'vue';
+import { createStore } from 'vuex';
 import ProductsGrid from './components/ProductsGrid.vue';
 import ProductForm from './components/ProductForm.vue';
 import ProductCard from './components/ProductCard.vue';
@@ -25,23 +26,37 @@ axios.defaults.baseURL = window.location.origin;
 const emitter = mitt();
 window.emitter = emitter;
 
+const store = createStore({
+    state() {
+        return {
+            count: 0,
+            cartItems: [],
+            isAuthenticated: false,
+        }
+    },
+    mutations: {
+        setIsAuthenticated(state, status) {
+            state.isAuthenticated = status;
+        },
+    },
+    actions: {
+        async fetchIsAuthenticated({ commit }) {
+            const response = await axios.get('auth/check');
+            commit('setIsAuthenticated', response.data.isAuthenticated);
+        }
+    },
+    getters: {
+        getIsAuthenticated: state => state.isAuthenticated,
+    }
+});
+
 const app = createApp({
-    data() {
-        //
-    },
-    created() {
-        //
-    },
-    mounted() {
+    async mounted() {
         emitter.on('requestErrorPopup', this.flashError);
+        await this.$store.dispatch('fetchIsAuthenticated');
     },
     beforeUnmount() {
         emitter.off('requestErrorPopup', this.flashError);
-    },
-    provide() {
-        return {
-            authenticated: window.authenticated,
-        }
     },
     methods: {
         flashError() {
@@ -56,6 +71,7 @@ const app = createApp({
 
 app.config.globalProperties.emitter = emitter;
 
+app.use(store);
 app.use(VueSweetalert2);
 app.use(ToastPlugin, {
     position: 'top-right',

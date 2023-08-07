@@ -92,9 +92,6 @@
             </footer>
         </div>
     </div>
-    <script>
-        window.authenticated = @json(auth()->check());
-    </script>
 </body>
 
 </html>

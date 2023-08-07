@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\AuthStatusController;
 use App\Http\Controllers\Cart\AddItemToCartController;
 use App\Models\Order;
 use App\Models\CartData;
@@ -23,6 +24,7 @@ use App\Models\Product;
 |
 */
 
+Route::get('/auth/check', AuthStatusController::class);
 Auth::routes();
 
 Route::group(['controller' => ProductController::class, 'prefix' => 'products', 'as' => 'products.'], function () {
