@@ -20,6 +20,9 @@ export default {
 <style scoped>
 .spinner-container {
   position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   z-index: 999;
   left: 0;
   top: 0;
@@ -35,13 +38,4 @@ export default {
   justify-content: center;
   align-items: center;
 }
-.spinner-border {
-  width: 50px;
-  height: 50px;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  margin: -25px 0 0 -25px;
-}
-
 </style>

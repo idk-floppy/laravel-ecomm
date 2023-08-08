@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Product;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -12,6 +13,8 @@ class CartItems extends Model
     public $timestamps = true;
 
     public $guarded = [];
+
+    protected $appends = ['subtotal'];
 
     // Relations
     public function cart()
@@ -27,9 +30,7 @@ class CartItems extends Model
     // Attributes
     public function getSubtotalAttribute()
     {
-        $productData = json_decode($this->product_data);
-        $price = $productData->price;
-
+        $price = $this->product->price;
         return $this->qty * $price;
     }
 }

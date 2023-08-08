@@ -6,11 +6,14 @@ import ProductForm from './components/ProductForm.vue';
 import ProductCard from './components/ProductCard.vue';
 import Cart from './components/Cart.vue';
 import NavItem from './components/NavItem.vue';
-import Navbar from './components/Navbar.vue';
 import LoadingOverlay from './components/LoadingOverlay.vue';
 import ProductSingleSheet from './components/ProductSingleSheet.vue';
 import LinkComponent from './components/LinkComponent.vue';
+import MiniCartButton from './components/MiniCartButton.vue';
+import MiniCartModal from './components/MiniCartModal.vue';
+import NavItemDropdown from './components/NavItemDropdown.vue';
 import mitt from 'mitt';
+import { GetCartService } from './components/services/GetCartService';
 
 // import { vue3Debounce } from 'vue-debounce';
 
@@ -29,34 +32,63 @@ window.emitter = emitter;
 const store = createStore({
     state() {
         return {
-            count: 0,
+            cartItemCount: 0,
             cartItems: [],
             isAuthenticated: false,
+            cartTotal: 0,
         }
     },
     mutations: {
         setIsAuthenticated(state, status) {
             state.isAuthenticated = status;
         },
+        setCartItems(state, items) {
+            state.cartItems = items;
+            state.cartItemCount = state.cartItems ? state.cartItems.length : 0;
+        },
+        setCartTotal(state, amount) {
+            state.cartTotal = amount;
+        }
     },
     actions: {
         async fetchIsAuthenticated({ commit }) {
             const response = await axios.get('auth/check');
             commit('setIsAuthenticated', response.data.isAuthenticated);
+        },
+        async fetchCartItems() {
+            const cart = await GetCartService();
+            this.dispatch('updateCartItems', cart)
+        },
+        updateCartItems({ commit }, cart) {
+            console.log(cart);
+            console.log(cart.total);
+            console.log(cart.items);
+            commit('setCartTotal', cart.total);
+            commit('setCartItems', cart.items);
         }
     },
     getters: {
         getIsAuthenticated: state => state.isAuthenticated,
+        getCartTotal: state => state.cartTotal,
+        getCartItemCount: state => state.cartItemCount,
+        getCartItems: state => state.cartItems,
     }
 });
 
 const app = createApp({
-    async mounted() {
+    mounted() {
         emitter.on('requestErrorPopup', this.flashError);
-        await this.$store.dispatch('fetchIsAuthenticated');
+        emitter.on('requestSuccessPopup', this.flashSuccess);
+        emitter.on('flashToast', (e) => {
+            this.flashToast(e.icon, e.title);
+        });
+        this.$store.dispatch('fetchCartItems');
+        this.$store.dispatch('fetchIsAuthenticated');
     },
     beforeUnmount() {
         emitter.off('requestErrorPopup', this.flashError);
+        emitter.off('requestSuccessPopup', this.flashSuccess);
+        emitter.off('flashToast', this.flashToast);
     },
     methods: {
         flashError() {
@@ -64,6 +96,23 @@ const app = createApp({
                 icon: 'error',
                 title: 'Oops...',
                 text: 'Something went wrong!',
+            });
+        },
+        flashSuccess() {
+            return this.$swal.fire({
+                icon: 'success',
+                title: 'Success',
+            });
+        },
+        flashToast(icon = 'info', title = 'Example Toast Notification!') {
+            return this.$swal.fire({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                icon: icon,
+                title: title,
             });
         }
     }
@@ -84,9 +133,11 @@ app.component('product-form', ProductForm);
 app.component('product-card', ProductCard);
 app.component('product-single-sheet', ProductSingleSheet);
 app.component('cart', Cart);
+app.component('mini-cart-button', MiniCartButton);
+app.component('mini-cart-modal', MiniCartModal);
 app.component('navitem', NavItem);
-app.component('link', LinkComponent);
-app.component('navbar', Navbar);
+app.component('custom-link', LinkComponent);
+app.component('navitem-dropdown', NavItemDropdown);
 
 // app.directive('debounce', vue3Debounce({ lock: true, defaultTime: '400ms' }));
 app.mount('#app');

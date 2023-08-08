@@ -12,22 +12,23 @@ import { addToCart } from "./services/AddToCartService";
 import ButtonBaseComponent from "./ButtonBaseComponent.vue";
 
 export default {
-  props: {
-    product_id: Number,
-    product_name: String,
-  },
-  components: {
-    ButtonBaseComponent,
-  },
-  methods: {
-    async addToCartLocal(product_id) {
-      const response = await addToCart(product_id);
-      if (response) {
-        this.$toast.success(this.product_name + " added to cart");
-      } else {
-        emitter.emit("requestErrorPopup");
-      }
+    props: {
+        product_id: Number,
+        product_name: String,
     },
-  },
+    components: {
+        ButtonBaseComponent,
+    },
+    methods: {
+        async addToCartLocal(product_id) {
+            const response = await addToCart(product_id);
+            this.$store.dispatch('updateCartItems', response.data.cart);
+            if (response.data.success) {
+                emitter.emit("flashToast", { icon: 'success', title: `${this.product_name} added to cart` });
+            } else {
+                emitter.emit("requestErrorPopup");
+            }
+        },
+    },
 };
 </script>

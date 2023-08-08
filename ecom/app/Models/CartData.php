@@ -13,8 +13,8 @@ class CartData extends Model
 {
     use HasFactory;
     public $timestamps = true;
-
     public $fillable = ['user_id', 'session_id'];
+    protected $appends = ['total'];
 
     // Relations
     public function items()
@@ -30,6 +30,7 @@ class CartData extends Model
         } else {
             $cart = CartData::firstOrCreate(['session_id' => $sessionId, 'user_id' => $userId]);
         }
+
         $cart->load('items.product');
         return $cart;
     }

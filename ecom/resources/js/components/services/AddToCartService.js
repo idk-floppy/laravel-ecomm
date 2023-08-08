@@ -4,7 +4,7 @@ async function addToCart(productId, qty = 1, addOrSet = "add") {
         addOrSet: addOrSet,
         qty: qty,
     });
-    return response.data.success;
+    return response;
 }
 
 export { addToCart };

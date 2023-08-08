@@ -17,7 +17,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(cartItem, index) in this.items" :key="index">
+          <tr v-for="(cartItem, index) in this.cartItems" :key="index">
             <td>
               <button
                 class="btn btn-danger"
@@ -45,7 +45,7 @@
               {{ formatPrice(cartItem.product.price) }}
             </td>
             <td>
-              {{ formatPrice(cartItem.product.price * cartItem.qty) }}
+              {{ formatPrice(cartItem.subtotal) }}
             </td>
           </tr>
           <tr>
@@ -53,7 +53,7 @@
             <td></td>
             <td></td>
             <td>Total</td>
-            <td>{{ formatPrice(total) }}</td>
+            <td>{{ formatPrice(cartTotal) }}</td>
           </tr>
         </tbody>
       </table>
@@ -66,99 +66,86 @@
 import { addToCart } from "./services/AddToCartService";
 
 export default {
-  data() {
-    return {
-      items: [],
-      total: 0,
-      loading: true,
-    };
-  },
-  methods: {
-    async getItems() {
-      await axios.get("cart/get").then((response) => {
-        if (Object.keys(response.data).length > 0) {
-          this.items = response["data"]["items"].map((item) => ({
-            ...item,
-            showQuantityField: false,
-          }));
+    data() {
+        return {
+            total: 0,
+            loading: true,
+        };
+    },
+    methods: {
+        async getItems() {
+            await axios.get("cart/get").then((response) => {
+                if (Object.keys(response.data).length > 0) {
+                    this.items = response["data"]["items"].map((item) => ({
+                        ...item,
+                        showQuantityField: false,
+                    }));
+                }
+            });
+            return 0;
+        },
+        async removeFromCart(cartitem_id) {
+            this.loading = true;
+            let response = await axios.post("cart/remove", { cartitem_id: cartitem_id });
+            if (response.data.success) {
+                this.$store.dispatch('updateCartItems', response.data.cart);
+                this.loading = false;
+                emitter.emit("flashToast", { icon: 'success', title: `Cart successfully updated` });
+            }
+        },
+
+        formatQtyInputName(id) {
+            return String(id) + "-qty";
+        },
+
+        showQuantityInput(item) {
+            item.showQuantityField = true;
+            this.$nextTick(() => {
+                this.$refs.qtyInput[0].focus();
+            });
+        },
+        async hideQuantityInput(item) {
+            let newQty = this.$refs.qtyInput[0].value;
+            item.showQuantityField = false;
+            if (newQty != item.qty) {
+                await this.updateQuantityByField(item, newQty);
+            }
+        },
+        async updateQuantityByField(item, qty) {
+            this.loading = true;
+            let response = await addToCart(item.product.id, qty, "set");
+            if (!response.data.success) {
+                this.loading = false;
+                emitter.emit("requestErrorPopup");
+                return 0;
+            }
+
+            this.$store.dispatch('updateCartItems', response.data.cart);
+            this.loading = false;
+            emitter.emit("flashToast", { icon: 'success', title: `${item.product.name} successfully updated` });
+        },
+        formatPrice(price) {
+            return price.toLocaleString("hu-HU") + " Ft";
+        },
+    },
+    computed: {
+        hasItems() {
+            return this.$store.getters.getCartItemCount;
+        },
+        productName: function () {
+            return function (cartItem) {
+                return cartItem.product.name;
+            };
+        },
+        cartItems() {
+            return this.$store.getters.getCartItems;
+        },
+        cartTotal(){
+            return this.$store.getters.getCartTotal;
         }
-      });
-      return 0;
     },
-    async calculateTotal() {
-      let total = 0;
-
-      this.items.forEach(item => {
-        total += item.qty * item.product.price;
-      });
-
-      this.total = total;
-    },
-    async removeFromCart(cartitem_id) {
-        this.loading = true;
-      await axios
-        .post("cart/remove", { cartitem_id: cartitem_id })
-        .then(async (response) => {
-          if (!response.data["success"]) {
-            this.loading = false;
-            return emitter.emit("requestErrorPopup");
-          }
-            await this.getItems();
-            await this.calculateTotal();
-            this.loading = false;
-        });
-    },
-
-    formatQtyInputName(id) {
-      return String(id) + "-qty";
-    },
-
-    showQuantityInput(item) {
-      item.showQuantityField = true;
-      this.$nextTick(() => {
-        this.$refs.qtyInput[0].focus();
-      });
-    },
-    async hideQuantityInput(item) {
-      let newQty = this.$refs.qtyInput[0].value;
-      item.showQuantityField = false;
-      if (newQty != item.qty) {
-        await this.updateQuantityByField(item, newQty);
-        await this.calculateTotal();
-      }
-    },
-    async updateQuantityByField(item, qty) {
-      this.loading = true;
-      let response = await addToCart(item.product.id, qty, "set");
-      if (!response) {
-        await this.getItems();
+    async mounted() {
         this.loading = false;
-        emitter.emit("requestErrorPopup");
-        return 0;
-      }
-
-      await this.getItems();
-      this.loading = false;
-      this.$toast.success(item.product.name + " updated");
     },
-    formatPrice(price) {
-      return price.toLocaleString("hu-HU") + " Ft";
-    },
-  },
-  computed: {
-    hasItems: function () {
-        return (this.items.length > 0)
-    },
-    productName: function () {
-      return function (cartItem) {
-        return cartItem.product.name;
-      };
-    },
-  },
-  async mounted() {
-    await this.getItems();
-    await this.calculateTotal();
-    this.loading = false;
-  },
 };
 </script>

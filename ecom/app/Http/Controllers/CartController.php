@@ -19,7 +19,7 @@ class CartController extends Controller
         $sessionId = $request->session()->getId();
 
         $cart = $helper->getCart($userId, $sessionId);
-        return $cart;
+        return response()->json(['cart' => $cart]);
     }
 
     public function removeItem(Request $request, CartData $helper)
@@ -30,16 +30,15 @@ class CartController extends Controller
 
         $userId = Auth::check() ? Auth::user()->id : null;
         $sessionId = $request->session()->getId();
+        $cart = $helper->getCart($userId, $sessionId);
 
         try {
-            $cart = $helper->getCart($userId, $sessionId);
-
             $cart->removeItem($request->cartitem_id);
         } catch (\Throwable $th) {
             report($th);
             return response()->json(['success' => false]);
         }
-
-        return response()->json(['success' => true]);
+        $cart->load('items.product');
+        return response()->json(['success' => true, 'cart' => $cart]);
     }
 }
