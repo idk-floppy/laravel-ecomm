@@ -14,7 +14,10 @@ import ButtonBaseComponent from "./ButtonBaseComponent.vue";
 export default {
     props: {
         product_id: Number,
-        product_name: String,
+        product_name: {
+            type: String,
+            default: "Product"
+        },
     },
     components: {
         ButtonBaseComponent,

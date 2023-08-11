@@ -4,13 +4,13 @@ import { createStore } from 'vuex';
 import ProductsGrid from './components/ProductsGrid.vue';
 import ProductForm from './components/ProductForm.vue';
 import ProductCard from './components/ProductCard.vue';
-import Cart from './components/Cart.vue';
+import CartTableView from './components/CartTableView.vue';
 import NavItem from './components/NavItem.vue';
 import LoadingOverlay from './components/LoadingOverlay.vue';
 import ProductSingleSheet from './components/ProductSingleSheet.vue';
 import LinkComponent from './components/LinkComponent.vue';
 import MiniCartButton from './components/MiniCartButton.vue';
-import MiniCartModal from './components/MiniCartModal.vue';
+import MiniCart from './components/MiniCart.vue';
 import NavItemDropdown from './components/NavItemDropdown.vue';
 import mitt from 'mitt';
 import { GetCartService } from './components/services/GetCartService';
@@ -60,9 +60,6 @@ const store = createStore({
             this.dispatch('updateCartItems', cart)
         },
         updateCartItems({ commit }, cart) {
-            console.log(cart);
-            console.log(cart.total);
-            console.log(cart.items);
             commit('setCartTotal', cart.total);
             commit('setCartItems', cart.items);
         }
@@ -109,7 +106,7 @@ const app = createApp({
                 toast: true,
                 position: 'top-end',
                 showConfirmButton: false,
-                timer: 3000,
+                timer: 1500,
                 timerProgressBar: true,
                 icon: icon,
                 title: title,
@@ -132,9 +129,9 @@ app.component('products-grid', ProductsGrid);
 app.component('product-form', ProductForm);
 app.component('product-card', ProductCard);
 app.component('product-single-sheet', ProductSingleSheet);
-app.component('cart', Cart);
+app.component('cart-table', CartTableView);
 app.component('mini-cart-button', MiniCartButton);
-app.component('mini-cart-modal', MiniCartModal);
+app.component('mini-cart', MiniCart);
 app.component('navitem', NavItem);
 app.component('custom-link', LinkComponent);
 app.component('navitem-dropdown', NavItemDropdown);

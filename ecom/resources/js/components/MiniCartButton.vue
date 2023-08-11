@@ -1,6 +1,6 @@
 <template>
     <div>
-        <button class="btn" data-bs-toggle="modal" data-bs-target="#cartModal" @click="this.logInfo">MiniCart ({{ cartItemCount }})</button>
+        <button class="btn" data-bs-toggle="collapse" data-bs-target="#minicart">Cart ({{ cartItemCount }})</button>
     </div>
 </template>
 <script>
@@ -9,11 +9,6 @@ export default {
         cartItemCount() {
             return this.$store.getters.getCartItemCount;
         },
-    },
-    methods: {
-        logInfo() {
-            console.log(this.cartItemCount);
-        }
     },
 }
 </script>

@@ -1,64 +1,7 @@
 <template>
   <div>
     <loading-overlay v-if="loading"></loading-overlay>
-
-    <div class="table-responsive">
-      <table
-        class="table table-striped table-hover"
-        v-if="hasItems"
-      >
-        <thead>
-          <tr>
-            <th scope="col" class="col-1">#</th>
-            <th scope="col" class="col-2">Product</th>
-            <th scope="col" class="col-1">Quantity</th>
-            <th scope="col" class="col-1">Piece-Price</th>
-            <th scope="col" class="col-2">Price</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(cartItem, index) in this.cartItems" :key="index">
-            <td>
-              <button
-                class="btn btn-danger"
-                @click="removeFromCart(cartItem.id)"
-              >
-                Remove
-              </button>
-            </td>
-            <td>{{ productName(cartItem) }}</td>
-            <td @click="showQuantityInput(cartItem)">
-              <input
-                type="number"
-                class="form-control"
-                :name="formatQtyInputName(cartItem.product_id)"
-                :value="cartItem.qty"
-                v-if="cartItem.showQuantityField"
-                ref="qtyInput"
-                @blur="hideQuantityInput(cartItem)"
-                @keyup.enter="hideQuantityInput(cartItem)"
-                min="1"
-              />
-              <p v-else>{{ cartItem.qty }}</p>
-            </td>
-            <td>
-              {{ formatPrice(cartItem.product.price) }}
-            </td>
-            <td>
-              {{ formatPrice(cartItem.subtotal) }}
-            </td>
-          </tr>
-          <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td>Total</td>
-            <td>{{ formatPrice(cartTotal) }}</td>
-          </tr>
-        </tbody>
-      </table>
-      <div v-else>Cart is empty</div>
-    </div>
+    <slot :cartItems="cartItems" :removeFromCart="removeFromCart" :productName="productName" :showQuantityInput="showQuantityInput" :hideQuantityInput="hideQuantityInput" :formatPrice="formatPrice" :cartTotal="cartTotal" :hasItems="hasItems"></slot>
   </div>
 </template>
 
@@ -73,17 +16,6 @@ export default {
         };
     },
     methods: {
-        async getItems() {
-            await axios.get("cart/get").then((response) => {
-                if (Object.keys(response.data).length > 0) {
-                    this.items = response["data"]["items"].map((item) => ({
-                        ...item,
-                        showQuantityField: false,
-                    }));
-                }
-            });
-            return 0;
-        },
         async removeFromCart(cartitem_id) {
             this.loading = true;
             let response = await axios.post("cart/remove", { cartitem_id: cartitem_id });
@@ -93,20 +25,15 @@ export default {
                 emitter.emit("flashToast", { icon: 'success', title: `Cart successfully updated` });
             }
         },
-
-        formatQtyInputName(id) {
-            return String(id) + "-qty";
-        },
-
-        showQuantityInput(item) {
+        showQuantityInput(item, event) {
             item.showQuantityField = true;
             this.$nextTick(() => {
-                this.$refs.qtyInput[0].focus();
+                event.currentTarget.querySelector('input').focus();
             });
         },
-        async hideQuantityInput(item) {
-            let newQty = this.$refs.qtyInput[0].value;
+        async hideQuantityInput(item, event) {
             item.showQuantityField = false;
+            let newQty = event.currentTarget.value;
             if (newQty != item.qty) {
                 await this.updateQuantityByField(item, newQty);
             }
@@ -140,7 +67,7 @@ export default {
         cartItems() {
             return this.$store.getters.getCartItems;
         },
-        cartTotal(){
+        cartTotal() {
             return this.$store.getters.getCartTotal;
         }
     },

@@ -8,8 +8,7 @@
                     <div class="card-header">{{ __('Cart') }}</div>
 
                     <div class="card-body">
-                        <cart></cart>
-
+                        <cart-table></cart-table>
                     </div>
                 </div>
             </div>

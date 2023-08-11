@@ -10,7 +10,7 @@
 </head>
 
 <body>
-    <div id="app">
+    <div id="app" class="d-flex flex-column min-vh-100">
         <nav class="navbar position-sticky top-0 navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/') }}">
@@ -18,8 +18,6 @@
                 </a>
 
                 <mini-cart-button></mini-cart-button>
-
-                {{-- <button class="btn btn-secondary" data-bs-target="#testing" data-bs-toggle="collapse">Test</button> --}}
 
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
@@ -75,18 +73,17 @@
                 </div>
             </div>
         </nav>
-        {{-- <div id="testing" class="collapse position-absolute bottom-0 end-0 p-3 bg-light" style="width: 800px;">
-            <h5>Mini Cart</h5>
-            <cart></cart>
-        </div> --}}
+        <div id="demo"></div>
+        <mini-cart></mini-cart>
         <main class="py-4 z-1">
             <div class="container">
                 <h2>@yield('title')</h2>
+                <ul></ul>
             </div>
             @yield('content')
         </main>
-        <div class="container-fluid bg-white">
-            <footer class="py-3 my-4">
+        <div class="container-fluid bg-white mt-auto">
+            <footer class="py-3 mt-4">
                 <ul class="nav justify-content-center border-bottom pb-3 mb-3">
                     <navitem url="https://github.com/idk-floppy" :linkclass="'text-muted'">Github</navitem>
                 </ul>
@@ -95,7 +92,6 @@
                 </p>
             </footer>
         </div>
-        <mini-cart-modal></mini-cart-modal>
     </div>
 </body>
 

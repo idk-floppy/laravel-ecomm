@@ -15,6 +15,13 @@ use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth', ['except' => [
+            'show'
+        ]]);
+    }
+
     /**
      * Show the form for creating a new resource.
      */
@@ -23,7 +30,6 @@ class ProductController extends Controller
         return view('products.create');
     }
 
-    // DELETE ME LATER
     /**
      * Display the specified resource.
      */
