@@ -10,7 +10,7 @@
                 </div>
                 <div class="row mb-2">
                     <div class="col">
-                        <cart-table></cart-table>
+                        <cart-list></cart-list>
                     </div>
                 </div>
                 <div class="row">

@@ -1,6 +1,5 @@
 <template>
-    <div>
-        <Cart v-slot="{ cartItems, removeFromCart, productName, showQuantityInput, hideQuantityInput, formatQtyInputName, formatPrice, cartTotal, hasItems }">
+        <Cart v-slot="{ cartItems, removeFromCart, productName, showQuantityInput, hideQuantityInput, formatPrice, cartTotal, hasItems }">
             <div v-if="hasItems">
                 <div class="table-responsive mb-1" id="cart-table">
                     <table class="table table-striped table-hover">
@@ -49,7 +48,6 @@
             </div>
             <div v-else>Cart is empty</div>
         </Cart>
-    </div>
 </template>
 <script>
 import Cart from './Cart.vue';
