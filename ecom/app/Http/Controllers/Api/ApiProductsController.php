@@ -56,12 +56,12 @@ class ApiProductsController extends Controller
     public function store(ProductSubmitRequest $request)
     {
         try {
-            $imgUrl = $request->file('image')->store('images', 'public');
-            $data = $request->post();
+            $data = $request->validated();
 
-            $product = DB::transaction(function () use ($data, $imgUrl) {
-                return Product::create(['name' => $data['name'], 'price' => $data['price'], 'image' => $imgUrl]);
+            $product = DB::transaction(function () use ($data) {
+                return Product::create(['name' => $data['name'], 'price' => $data['price'], 'image' => null]);
             });
+            $product->saveImage($request->file('image'));
 
             return response()->json(['success' => true, 'data' => $product]);
         } catch (\Throwable $th) {
@@ -88,11 +88,7 @@ class ApiProductsController extends Controller
         try {
             DB::transaction(function () use ($data, $product, $request) {
                 if ($request->file('image')) {
-                    if ($product->image) {
-                        Storage::delete($product->image);
-                    }
-                    $imgUrl = $request->file('image')->store('images', 'public');
-                    $product->image = $imgUrl;
+                    $product->saveImage($request->file('image'));
                 }
                 $product->name = $data['name'];
                 $product->price = $data['price'];

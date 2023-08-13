@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Product extends Model
 {
@@ -30,5 +31,16 @@ class Product extends Model
     public function scopeFilterByMaxPrice($query, $maxPrice)
     {
         return $query->where('price', '<=', $maxPrice);
+    }
+
+
+    // Methods
+    public function saveImage($image)
+    {
+        if ($this->image) {
+            Storage::delete($this->image);
+        }
+        $imgUrl = $image->store('images', 'public');
+        $this->image = $imgUrl;
     }
 }
