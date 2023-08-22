@@ -27,25 +27,24 @@ class ApiProductsController extends Controller
      */
     public function index()
     {
-        $name = request('search');
-        $orderBy = request('orderBy');
-        $minPrice = request('minPrice');
-        $maxPrice = request('maxPrice');
+        $query = Product::query();
 
-        $products = Product::query()
-            ->when($name, function ($query, $name) {
-                return $query->filterByName($name);
-            })
-            ->when($minPrice, function ($query, $minPrice) {
-                return $query->filterByMinPrice($minPrice);
-            })
-            ->when($maxPrice, function ($query, $maxPrice) {
-                return $query->filterByMaxPrice($maxPrice);
-            })
-            ->when($orderBy, function ($query, $orderBy) {
-                return $query->orderBy($orderBy, 'ASC');
-            })
-            ->paginate(12);
+        // add things to filter here. Do not forget to create the scope in the model.
+        $filters = [
+            // 'parameter' => 'theScopeFunctionInModel', // example
+            'name' => 'filterByName',
+            'minPrice' => 'filterByMinPrice',
+            'maxPrice' => 'filterByMaxPrice',
+            'orderBy' => 'orderBy',
+        ];
+
+        foreach ($filters as $parameter => $method) {
+            if (request()->has($parameter)) {
+                $query->$method(request()->input($parameter));
+            }
+        }
+
+        $products = $query->paginate(12);
 
         return ProductResource::collection($products);
     }
