@@ -11,6 +11,13 @@ class Product extends Model
     use HasFactory;
     public $fillable = ['name', 'price', 'image'];
 
+    public static $filters = [
+        'name' => 'filterByName',
+        'minPrice' => 'filterByMinPrice',
+        'maxPrice' => 'filterByMaxPrice',
+        'orderBy' => 'orderBy',
+    ];
+
     // Attributes
     public function getImageURLAttribute()
     {

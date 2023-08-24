@@ -15,7 +15,7 @@ class CartController extends Controller
 {
     public function getItems(Request $request, CartData $helper)
     {
-        $userId = Auth::check() ? Auth::user()->id : null;
+        $userId = auth()->id();
         $sessionId = $request->session()->getId();
 
         $cart = $helper->getCart($userId, $sessionId);
@@ -28,7 +28,7 @@ class CartController extends Controller
             'cartitem_id' => 'required|numeric'
         ]);
 
-        $userId = Auth::check() ? Auth::user()->id : null;
+        $userId = auth()->id();
         $sessionId = $request->session()->getId();
         $cart = $helper->getCart($userId, $sessionId);
 

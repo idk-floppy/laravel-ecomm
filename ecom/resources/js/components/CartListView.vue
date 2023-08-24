@@ -13,13 +13,17 @@
   >
     <div v-if="hasItems" class="container">
       <div class="border-bottom">
-        <div v-for="(cartItem, index) in cartItems" :key="index" class="row">
+        <div
+          v-for="(cartItem, index) in cartItems"
+          :key="index"
+          class="row mb-2 p-2 rounded cart-item"
+        >
           <div class="col-2 col-md-2">
             <button class="btn btn-danger" @click="removeFromCart(cartItem.id)">
-              x
+              <i class="bi bi-trash"></i>
             </button>
           </div>
-          <div class="col-4 col-md-4">
+          <div class="col-4 col-md-4 text-break">
             <a>{{ productName(cartItem) }}</a>
           </div>
           <div
@@ -69,5 +73,11 @@ export default {
 <style scoped>
 #cart-table {
   max-height: max(400px, 50vh);
+}
+.cart-item {
+  transition: box-shadow 0.2s ease-in-out;
+}
+.cart-item:hover {
+  box-shadow: 0 0 2px black;
 }
 </style>

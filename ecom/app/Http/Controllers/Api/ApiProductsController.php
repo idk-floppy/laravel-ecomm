@@ -29,17 +29,10 @@ class ApiProductsController extends Controller
     {
         $query = Product::query();
 
-        // add things to filter here. Do not forget to create the scope in the model.
-        $filters = [
-            // 'parameter' => 'theScopeFunctionInModel', // example
-            'name' => 'filterByName',
-            'minPrice' => 'filterByMinPrice',
-            'maxPrice' => 'filterByMaxPrice',
-            'orderBy' => 'orderBy',
-        ];
+        $filters = Product::$filters;
 
         foreach ($filters as $parameter => $method) {
-            if (request()->has($parameter)) {
+            if (request()->has($parameter) && request()->input($parameter) != null) {
                 $query->$method(request()->input($parameter));
             }
         }
@@ -61,6 +54,7 @@ class ApiProductsController extends Controller
                 return Product::create(['name' => $data['name'], 'price' => $data['price'], 'image' => null]);
             });
             $product->saveImage($request->file('image'));
+            $product->save();
 
             return response()->json(['success' => true, 'data' => $product]);
         } catch (\Throwable $th) {
