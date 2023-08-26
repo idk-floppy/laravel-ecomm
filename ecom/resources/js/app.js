@@ -15,6 +15,7 @@ import MiniCart from './components/MiniCart.vue';
 import NavItemDropdown from './components/NavItemDropdown.vue';
 import mitt from 'mitt';
 import { GetCartService } from './components/services/GetCartService';
+import { handleCallback } from './components/services/HelperFunctions';
 
 // import { vue3Debounce } from 'vue-debounce';
 
@@ -75,8 +76,12 @@ const store = createStore({
 
 const app = createApp({
     mounted() {
-        emitter.on('requestErrorPopup', this.flashError);
-        emitter.on('requestSuccessPopup', this.flashSuccess);
+        emitter.on('requestErrorPopup', (e) => {
+            this.flashError(e.message, e.callback);
+        });
+        emitter.on('requestSuccessPopup', (e) => {
+            this.flashSuccess(e.message, e.callback);
+        });
         emitter.on('flashToast', (e) => {
             this.flashToast(e.icon, e.title);
         });
@@ -89,18 +94,23 @@ const app = createApp({
         emitter.off('flashToast', this.flashToast);
     },
     methods: {
-        flashError() {
-            return this.$swal.fire({
+        flashError(message = "Something went wrong!", callback = null) {
+            const swalResponse = this.$swal.fire({
                 icon: 'error',
-                title: 'Oops...',
-                text: 'Something went wrong!',
+                title: 'Error',
+                text: message,
             });
+
+            handleCallback(swalResponse, callback);
         },
-        flashSuccess() {
-            return this.$swal.fire({
+        flashSuccess(message = null, callback = null) {
+            const swalResponse = this.$swal.fire({
                 icon: 'success',
                 title: 'Success',
+                text: message,
             });
+
+            handleCallback(swalResponse, callback);
         },
         flashToast(icon = 'info', title = 'Example Toast Notification!') {
             return this.$swal.fire({

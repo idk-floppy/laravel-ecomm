@@ -21,7 +21,7 @@ class AddItemToCartController extends Controller
         try {
             // Check if the product exists. If it doesn't, just report it and throw a false success.
             if (!(Product::query()->find($request->input('product_id'))->exists())) {
-                return response()->json(['success' => false, 'message' => 'Product does not exist']);
+                abort(404, 'Product does not exist');
             }
 
             $product = Product::query()->find($request->input('product_id'));
@@ -53,7 +53,6 @@ class AddItemToCartController extends Controller
                 case 'set':
                     $cartItem->qty = $quantity;
                     break;
-
                 case 'add':
                     $cartItem->qty += $quantity;
                     break;
@@ -66,7 +65,7 @@ class AddItemToCartController extends Controller
             return response()->json(['success' => true, 'cart' => $cart]);
         } catch (\Throwable $th) {
             report($th);
-            return response()->json(['success' => false]);
+            return response()->json(['success' => false, 'message' => $th->getMessage()], $th->getStatusCode());
         }
     }
 }
