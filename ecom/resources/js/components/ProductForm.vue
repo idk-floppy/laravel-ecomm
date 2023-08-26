@@ -77,7 +77,6 @@
   </div>
 </template>
 <script>
-import { submitEditProductForm } from "./services/SubmitEditProductForm";
 import { submitProductForm } from "./services/SubmitProductForm";
 
 export default {
@@ -89,6 +88,7 @@ export default {
     },
     productId: {
       type: Number,
+      default: null,
     },
   },
   data() {
@@ -122,9 +122,7 @@ export default {
       let response;
 
       try {
-        response = this.isCreateMode
-          ? await submitProductForm(formData)
-          : await submitEditProductForm(formData, this.productId);
+        response = await submitProductForm(formData, this.productId);
       } catch (error) {
         this.errors = error.response.data.errors;
         this.loading = false;
