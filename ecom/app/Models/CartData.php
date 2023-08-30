@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Resources\CartItemResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -34,7 +35,7 @@ class CartData extends Model
 
         $cart = CartData::firstOrCreate($findOrCreateBy);
 
-        $cart->load(['user', 'items.product']);
+        // $cart->load(['user', 'items.product']);
         return $cart;
     }
 

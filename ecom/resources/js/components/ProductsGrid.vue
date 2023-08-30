@@ -65,7 +65,7 @@
           <product-card
             :id="product.id"
             :name="product.name"
-            :price="product.price"
+            :price="product.price_display"
             :image="product.image"
           ></product-card>
         </div>

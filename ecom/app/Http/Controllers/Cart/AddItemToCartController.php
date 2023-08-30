@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CartDataResource;
 use Illuminate\Support\Facades\Auth;
 
 class AddItemToCartController extends Controller
@@ -37,7 +38,7 @@ class AddItemToCartController extends Controller
             if ($quantity < 1) {
                 $helper->removeItem($cart, $product->id);
                 $cart->load('items.product');
-                return response()->json(['success' => true, 'cart' => $cart]);
+                return response()->json(['success' => true, 'cart' => new CartDataResource($cart)]);
             }
 
             $cartItem = $cart->items()->firstOrCreate(
@@ -62,7 +63,7 @@ class AddItemToCartController extends Controller
             $cart->touch();
 
             $cart = $helper->getCart($userId, $sessionId);
-            return response()->json(['success' => true, 'cart' => $cart]);
+            return response()->json(['success' => true, 'cart' => new CartDataResource($cart)]);
         } catch (\Throwable $th) {
             report($th);
             return response()->json(['success' => false, 'message' => $th->getMessage()], $th->getStatusCode());

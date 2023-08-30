@@ -6,7 +6,6 @@
       productName,
       showQuantityInput,
       hideQuantityInput,
-      formatPrice,
       cartTotal,
       hasItems,
     }"
@@ -58,15 +57,13 @@
                 </p>
               </td>
               <td>
-                {{ formatPrice(cartItem.subtotal) }} ({{
-                  formatPrice(cartItem.product.price)
-                }})
+                {{ cartItem.subtotal }}
               </td>
             </tr>
           </tbody>
         </table>
       </div>
-      <p class="float-start">Total: {{ formatPrice(cartTotal) }}</p>
+      <p class="float-start">Total: {{ cartTotal }}</p>
     </div>
     <div v-else>Cart is empty</div>
   </Cart>

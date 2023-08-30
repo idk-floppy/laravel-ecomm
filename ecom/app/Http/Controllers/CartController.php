@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CartDataResource;
 use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
@@ -19,7 +20,7 @@ class CartController extends Controller
         $sessionId = $request->session()->getId();
 
         $cart = $helper->getCart($userId, $sessionId);
-        return response()->json(['cart' => $cart]);
+        return response()->json(['cart' => new CartDataResource($cart)]);
     }
 
     public function removeItem(Request $request, CartData $helper)
@@ -39,6 +40,6 @@ class CartController extends Controller
             return response()->json(['success' => false]);
         }
         $cart->load('items.product');
-        return response()->json(['success' => true, 'cart' => $cart]);
+        return response()->json(['success' => true, 'cart' => new CartDataResource($cart)]);
     }
 }

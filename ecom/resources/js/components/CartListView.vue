@@ -6,7 +6,6 @@
       productName,
       showQuantityInput,
       hideQuantityInput,
-      formatPrice,
       cartTotal,
       hasItems,
     }"
@@ -52,11 +51,11 @@
             </p>
           </div>
           <div class="col-3 col-md-3 text-md-right">
-            {{ formatPrice(cartItem.subtotal) }}
+            {{ cartItem.subtotal }}
           </div>
         </div>
       </div>
-      <p class="float-end">Total: {{ formatPrice(cartTotal) }}</p>
+      <p class="float-end">Total: {{ cartTotal }}</p>
     </div>
     <div v-else>Cart is empty</div>
   </Cart>
