@@ -12,7 +12,7 @@
                   v-model="searchTerm"
                   class="form-control p-2"
                   placeholder="Search"
-                  @keydown.enter="filterProducts"
+                  @keydown.enter="getProducts()"
                 />
               </div>
               <div class="col">
@@ -24,7 +24,7 @@
                     v-model="minPrice"
                     class="form-control p-2"
                     placeholder="min ft"
-                    @keydown.enter="filterProducts"
+                    @keydown.enter="getProducts()"
                   />
                   <input
                     type="number"
@@ -33,7 +33,7 @@
                     v-model="maxPrice"
                     class="form-control p-2"
                     placeholder="max ft"
-                    @keydown.enter="filterProducts"
+                    @keydown.enter="getProducts()"
                   />
                 </div>
               </div>
@@ -53,7 +53,7 @@
                   type="button"
                   value="Search"
                   class="btn btn-primary w-100"
-                  @click="filterProducts"
+                  @click="getProducts()"
                 />
               </div>
             </div>
@@ -80,9 +80,7 @@
           <li class="page-item" :class="{ disabled: !links.prev }">
             <a
               class="page-link"
-              @click.prevent="
-                  getProducts(searchTerm, minPrice, maxPrice, orderBy, links.prev)
-                  "
+              @click.prevent="getProducts(links.prev)"
               href="#"
               >Previous</a
             >
@@ -95,9 +93,7 @@
           <li class="page-item" :class="{ disabled: !links.next }">
             <a
               class="page-link"
-              @click.prevent="
-                  getProducts(searchTerm, minPrice, maxPrice, orderBy, links.next)
-                  "
+              @click.prevent="getProducts(links.next)"
               href="#"
               >Next</a
             >
@@ -108,57 +104,43 @@
   </div>
 </template>
 <script>
-
 export default {
-    emits: ["addToCart"],
-    data() {
-        return {
-            products: [],
-            meta: {},
-            links: {},
-            searchTerm: "",
-            orderBy: "name",
-            minPrice: null,
-            maxPrice: null,
-            loading: true,
-        };
+  data() {
+    return {
+      products: [],
+      meta: {},
+      links: {},
+      searchTerm: "",
+      orderBy: "name",
+      minPrice: null,
+      maxPrice: null,
+      loading: true,
+    };
+  },
+  methods: {
+    async getProducts(url = "/api/products") {
+      console.log("url");
+      console.log(url);
+      this.$store.dispatch("modifyIsLoading", true);
+      await axios
+        .get(url, {
+          params: {
+            name: this.searchTerm,
+            orderBy: this.orderBy,
+            minPrice: this.minPrice,
+            maxPrice: this.maxPrice,
+          },
+        })
+        .then((response) => {
+          this.products = response.data.data;
+          this.meta = response.data.meta;
+          this.links = response.data.links;
+        });
+      this.$store.dispatch("modifyIsLoading", false);
     },
-    methods: {
-        async getProducts(
-            searchTerm = "",
-            minPrice = null,
-            maxPrice = null,
-            orderBy = "name",
-            url = "/api/products"
-        ) {
-            this.$store.dispatch('modifyIsLoading', true);
-            await axios
-                .get(url, {
-                    params: {
-                        name: searchTerm,
-                        orderBy: orderBy,
-                        minPrice: minPrice,
-                        maxPrice: maxPrice,
-                    },
-                })
-                .then((response) => {
-                    this.products = response.data.data;
-                    this.meta = response.data.meta;
-                    this.links = response.data.links;
-                });
-            this.$store.dispatch('modifyIsLoading', false);
-        },
-        filterProducts() {
-            return this.getProducts(
-                this.searchTerm,
-                this.minPrice,
-                this.maxPrice,
-                this.orderBy
-            );
-        },
-    },
-    mounted() {
-        this.getProducts();
-    },
+  },
+  mounted() {
+    this.getProducts();
+  },
 };
 </script>

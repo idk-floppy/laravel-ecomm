@@ -1,39 +1,42 @@
 <template>
-<div class="position-sticky z-2">
+  <div class="position-sticky z-2">
     <div class="container">
-        <div class="row position-absolute float-start bg-white shadow p-2 collapse" id="minicart">
+      <div
+        class="row position-absolute float-start bg-white shadow p-2 collapse"
+        id="minicart"
+      >
+        <div class="col">
+          <div class="row mb-2">
             <div class="col">
-                <div class="row mb-2">
-                    <div class="col">
-                        <h2>Cart</h2>
-                    </div>
-                </div>
-                <div class="row mb-2">
-                    <div class="col">
-                        <cart-list></cart-list>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <a href="/cart" class="btn btn-primary w-100">Open Cart</a>
-                    </div>
-                </div>
+              <h2>Cart</h2>
             </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col">
+              <cart-list></cart-list>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <a href="/cart" class="btn btn-primary w-100">Open Cart</a>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
-</div>
+  </div>
 </template>
 <script>
-export default {
-
-}
+export default {};
 </script>
 <style scoped>
 #minicart {
-    width: clamp(25%, 450px, 100%);
+  width: clamp(25%, 450px, 100%);
+  max-height: 75vh;
+  overflow-x: auto;
 }
 
 .position-sticky {
-    top: 55px;
+  top: 55px;
 }
 </style>
