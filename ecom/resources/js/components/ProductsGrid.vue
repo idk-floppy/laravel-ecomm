@@ -1,6 +1,5 @@
 <template>
   <div>
-    <loading-overlay v-if="loading" overlay="fullscreen"></loading-overlay>
     <div class="container">
       <div class="row mb-4 g-0">
         <div class="card">
@@ -82,8 +81,8 @@
             <a
               class="page-link"
               @click.prevent="
-                getProducts(searchTerm, minPrice, maxPrice, orderBy, links.prev)
-              "
+                  getProducts(searchTerm, minPrice, maxPrice, orderBy, links.prev)
+                  "
               href="#"
               >Previous</a
             >
@@ -97,8 +96,8 @@
             <a
               class="page-link"
               @click.prevent="
-                getProducts(searchTerm, minPrice, maxPrice, orderBy, links.next)
-              "
+                  getProducts(searchTerm, minPrice, maxPrice, orderBy, links.next)
+                  "
               href="#"
               >Next</a
             >
@@ -109,61 +108,57 @@
   </div>
 </template>
 <script>
-import ProductCard from "./ProductCard.vue";
 
 export default {
-  emits: ["addToCart"],
-  components: {
-    ProductCard,
-  },
-  data() {
-    return {
-      products: [],
-      meta: {},
-      links: {},
-      searchTerm: "",
-      orderBy: "name",
-      minPrice: null,
-      maxPrice: null,
-      loading: true,
-    };
-  },
-  methods: {
-    async getProducts(
-      searchTerm = "",
-      minPrice = null,
-      maxPrice = null,
-      orderBy = "name",
-      url = "/api/products"
-    ) {
-      this.loading = true;
-      await axios
-        .get(url, {
-          params: {
-            name: searchTerm,
-            orderBy: orderBy,
-            minPrice: minPrice,
-            maxPrice: maxPrice,
-          },
-        })
-        .then((response) => {
-          this.products = response.data.data;
-          this.meta = response.data.meta;
-          this.links = response.data.links;
-        });
-      this.loading = false;
+    emits: ["addToCart"],
+    data() {
+        return {
+            products: [],
+            meta: {},
+            links: {},
+            searchTerm: "",
+            orderBy: "name",
+            minPrice: null,
+            maxPrice: null,
+            loading: true,
+        };
     },
-    filterProducts() {
-      return this.getProducts(
-        this.searchTerm,
-        this.minPrice,
-        this.maxPrice,
-        this.orderBy
-      );
+    methods: {
+        async getProducts(
+            searchTerm = "",
+            minPrice = null,
+            maxPrice = null,
+            orderBy = "name",
+            url = "/api/products"
+        ) {
+            this.$store.dispatch('modifyIsLoading', true);
+            await axios
+                .get(url, {
+                    params: {
+                        name: searchTerm,
+                        orderBy: orderBy,
+                        minPrice: minPrice,
+                        maxPrice: maxPrice,
+                    },
+                })
+                .then((response) => {
+                    this.products = response.data.data;
+                    this.meta = response.data.meta;
+                    this.links = response.data.links;
+                });
+            this.$store.dispatch('modifyIsLoading', false);
+        },
+        filterProducts() {
+            return this.getProducts(
+                this.searchTerm,
+                this.minPrice,
+                this.maxPrice,
+                this.orderBy
+            );
+        },
     },
-  },
-  mounted() {
-    this.getProducts();
-  },
+    mounted() {
+        this.getProducts();
+    },
 };
 </script>

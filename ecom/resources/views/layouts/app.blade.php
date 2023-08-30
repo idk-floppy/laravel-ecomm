@@ -11,6 +11,7 @@
 
 <body>
     <div id="app" class="d-flex flex-column min-vh-100">
+        <loading-overlay></loading-overlay>
         <nav class="navbar position-sticky top-0 navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/') }}">

@@ -5,14 +5,16 @@ namespace App\Http\Controllers\Api;
 use App\Models\Product;
 use App\Models\CartItems;
 use Illuminate\Http\Request;
+use App\Filters\ProductFilters;
+use App\Helpers\Query\FilterHelper;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ProductResource;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Redirect;
 use App\Http\Requests\ProductSubmitRequest;
 use App\Http\Requests\ProductUpdateRequest;
-use Illuminate\Support\Facades\Log;
 
 class ApiProductsController extends Controller
 {
@@ -25,17 +27,12 @@ class ApiProductsController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $query = Product::query();
+        $filters = ProductFilters::getFilters();
 
-        $filters = Product::$filters;
-
-        foreach ($filters as $parameter => $method) {
-            if (request()->has($parameter) && request()->input($parameter) != null) {
-                $query->$method(request()->input($parameter));
-            }
-        }
+        (new FilterHelper)->applyFilters($query, $request, $filters);
 
         $products = $query->paginate(12);
 
@@ -66,8 +63,14 @@ class ApiProductsController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Product $product)
+    public function show($productId)
     {
+        Log::info("inside show");
+        $product = Product::find($productId);
+        Log::info(!$product);
+        if (!$product) {
+            return response()->json(['success' => false, 'message' => 'Product does not exist'], 404);
+        }
         return response()->json(['product' => new ProductResource($product)]);
     }
 

@@ -1,7 +1,5 @@
 <template>
   <div>
-    <loading-overlay v-if="loading"></loading-overlay>
-
     <div>
       <form
         method="post"
@@ -80,67 +78,77 @@
 import { submitProductForm } from "./services/SubmitProductForm";
 
 export default {
-  props: {
-    isCreateMode: {
-      type: Boolean,
-      required: true,
-      default: true,
-    },
-    productId: {
-      type: Number,
-      default: null,
-    },
-  },
-  data() {
-    return {
-      name: "",
-      price: 0,
-      errors: null,
-      loading: true,
-    };
-  },
-  async created() {
-    if (!this.isCreateMode) await this.fetchProductData(this.productId);
-    this.loading = false;
-  },
-  methods: {
-    async fetchProductData(productId) {
-      axios.get(`api/products/${productId}`).then((response) => {
-        this.name = response.data.product.name;
-        this.price = response.data.product.price;
-      });
-    },
-    async submitForm() {
-      this.loading = true;
-      let formData = new FormData();
-      if (typeof this.$refs.image.files[0] !== "undefined") {
-        formData.append("image", this.$refs.image.files[0]);
-      }
-      formData.append("name", this.name);
-      formData.append("price", this.price);
-      if (!this.isCreateMode) formData.append("_method", "PATCH");
-      let response;
-
-      try {
-        response = await submitProductForm(formData, this.productId);
-      } catch (error) {
-        this.errors = error.response.data.errors;
-        this.loading = false;
-        emitter.emit("requestErrorPopup", {
-          message: error.response.data.message,
-        });
-        return 0;
-      } finally {
-        this.loading = false;
-      }
-      emitter.emit("requestSuccessPopup", {
-        message: this.isCreateMode ? "Product created" : "Product updated",
-        callback: () => {
-          window.location =
-            window.location.origin + "/products/" + response.data.id;
+    props: {
+        isCreateMode: {
+            type: Boolean,
+            required: true,
+            default: true,
         },
-      });
+        productId: {
+            type: Number,
+            default: null,
+        },
     },
-  },
+    data() {
+        return {
+            name: "",
+            price: 0,
+            errors: null,
+        };
+    },
+    async created() {
+        this.$store.dispatch('modifyIsLoading', true);
+        if (!this.isCreateMode) await this.fetchProductData(this.productId);
+        this.$store.dispatch('modifyIsLoading', false);
+    },
+    methods: {
+        async fetchProductData(productId) {
+            axios.get(`api/products/${productId}`).then((response) => {
+                this.name = response.data.product.name;
+                this.price = response.data.product.price;
+            })
+                .catch((resp) => {
+                    history.pushState(null, null, null);
+                    emitter.emit('requestErrorPopup', {
+                        "message": resp.response.data.message,
+                        "callback": () => {
+                            emitter.emit('');
+                            return window.location.href = window.location.origin;
+                        }
+                    });
+                });
+        },
+        async submitForm() {
+            this.$store.dispatch('modifyIsLoading', true);
+            let formData = new FormData();
+            if (typeof this.$refs.image.files[0] !== "undefined") {
+                formData.append("image", this.$refs.image.files[0]);
+            }
+            formData.append("name", this.name);
+            formData.append("price", this.price);
+            if (!this.isCreateMode) formData.append("_method", "PATCH");
+            let response;
+
+            try {
+                response = await submitProductForm(formData, this.productId);
+            } catch (error) {
+                this.errors = error.response.data.errors;
+                this.$store.dispatch('modifyIsLoading', false);
+                emitter.emit("requestErrorPopup", {
+                    message: error.response.data.message,
+                });
+                return 0;
+            } finally {
+                this.$store.dispatch('modifyIsLoading', false);
+            }
+            emitter.emit("requestSuccessPopup", {
+                message: this.isCreateMode ? "Product created" : "Product updated",
+                callback: () => {
+                    window.location =
+                        window.location.origin + "/products/" + response.data.id;
+                },
+            });
+        },
+    },
 };
 </script>

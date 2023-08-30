@@ -1,6 +1,5 @@
 import './bootstrap';
 import { createApp } from 'vue';
-import { createStore } from 'vuex';
 import ProductsGrid from './components/ProductsGrid.vue';
 import ProductForm from './components/ProductForm.vue';
 import ProductCard from './components/ProductCard.vue';
@@ -14,65 +13,17 @@ import MiniCartButton from './components/MiniCartButton.vue';
 import MiniCart from './components/MiniCart.vue';
 import NavItemDropdown from './components/NavItemDropdown.vue';
 import mitt from 'mitt';
-import { GetCartService } from './components/services/GetCartService';
 import { handleCallback } from './components/services/HelperFunctions';
-
-// import { vue3Debounce } from 'vue-debounce';
 
 import VueSweetalert2 from 'vue-sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
-
-import ToastPlugin from 'vue-toast-notification';
-import 'vue-toast-notification/dist/theme-bootstrap.css';
+// import '@sweetalert2/theme-borderless/borderless.scss'; // ez jól néz ki, csak a toast néz ki hülyén
 
 import axios from 'axios';
 axios.defaults.baseURL = window.location.origin;
 
 const emitter = mitt();
 window.emitter = emitter;
-
-const store = createStore({
-    state() {
-        return {
-            cartItemCount: 0,
-            cartItems: [],
-            isAuthenticated: false,
-            cartTotal: 0,
-        }
-    },
-    mutations: {
-        setIsAuthenticated(state, status) {
-            state.isAuthenticated = status;
-        },
-        setCartItems(state, items) {
-            state.cartItems = items;
-            state.cartItemCount = state.cartItems ? state.cartItems.length : 0;
-        },
-        setCartTotal(state, amount) {
-            state.cartTotal = amount;
-        }
-    },
-    actions: {
-        async fetchIsAuthenticated({ commit }) {
-            const response = await axios.get('auth/check');
-            commit('setIsAuthenticated', response.data.isAuthenticated);
-        },
-        async fetchCartItems() {
-            const cart = await GetCartService();
-            this.dispatch('updateCartItems', cart)
-        },
-        updateCartItems({ commit }, cart) {
-            commit('setCartTotal', cart.total);
-            commit('setCartItems', cart.items);
-        }
-    },
-    getters: {
-        getIsAuthenticated: state => state.isAuthenticated,
-        getCartTotal: state => state.cartTotal,
-        getCartItemCount: state => state.cartItemCount,
-        getCartItems: state => state.cartItems,
-    }
-});
 
 const app = createApp({
     mounted() {
@@ -115,9 +66,9 @@ const app = createApp({
         flashToast(icon = 'info', title = 'Example Toast Notification!') {
             return this.$swal.fire({
                 toast: true,
-                position: 'top-end',
+                position: 'center',
                 showConfirmButton: false,
-                timer: 1500,
+                timer: 2000,
                 timerProgressBar: true,
                 icon: icon,
                 title: title,
@@ -128,12 +79,9 @@ const app = createApp({
 
 app.config.globalProperties.emitter = emitter;
 
+import { store } from './store';
 app.use(store);
 app.use(VueSweetalert2);
-app.use(ToastPlugin, {
-    position: 'top-right',
-    duration: 3000,
-});
 
 app.component('loading-overlay', LoadingOverlay);
 app.component('products-grid', ProductsGrid);

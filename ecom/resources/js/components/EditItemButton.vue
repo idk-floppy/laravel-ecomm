@@ -11,16 +11,16 @@
 import ButtonBaseComponent from "./ButtonBaseComponent.vue";
 
 export default {
-  props: {
-    product_id: Number,
-  },
-  components: {
-    ButtonBaseComponent,
-  },
-  methods: {
-    editItem(product_id) {
-      return (window.location.href = "/products/" + product_id + "/edit");
+    props: {
+        product_id: Number,
     },
-  },
+    components: {
+        ButtonBaseComponent,
+    },
+    methods: {
+        editItem(product_id) {
+            return (window.location.href = "/products/" + product_id + "/edit");
+        },
+    },
 };
 </script>
