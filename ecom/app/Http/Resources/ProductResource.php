@@ -22,7 +22,7 @@ class ProductResource extends JsonResource
             // 'slug' => $this->slug,
             // 'description' => substr($this->description, 0, 40) . "...",
             'price' => $this->price,
-            'price_display' => "{$this->price} Ft",
+            'price_display' => number_format($this->price, 0, '.', ' ') . " Ft",
         ];
     }
 }

@@ -20,7 +20,7 @@ class CartItemResource extends JsonResource
             'product' => $this->product,
             'product_id' => $this->product_id,
             'qty' => $this->qty,
-            'subtotal' => "{$this->subtotal} Ft"
+            'subtotal' => number_format($this->subtotal, 0, '.', ' ') . " Ft",
         ];
     }
 }

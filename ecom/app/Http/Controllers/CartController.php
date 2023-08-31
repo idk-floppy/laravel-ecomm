@@ -14,16 +14,21 @@ use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
-    public function getItems(Request $request, CartData $helper)
+    public function __construct(CartData $helper)
+    {
+        $this->helper = $helper;
+    }
+
+    public function getItems(Request $request)
     {
         $userId = auth()->id();
         $sessionId = $request->session()->getId();
 
-        $cart = $helper->getCart($userId, $sessionId);
+        $cart = $this->helper->getCart($userId, $sessionId);
         return response()->json(['cart' => new CartDataResource($cart)]);
     }
 
-    public function removeItem(Request $request, CartData $helper)
+    public function removeItem(Request $request)
     {
         $this->validate($request, [
             'cartitem_id' => 'required|numeric'
@@ -31,7 +36,7 @@ class CartController extends Controller
 
         $userId = auth()->id();
         $sessionId = $request->session()->getId();
-        $cart = $helper->getCart($userId, $sessionId);
+        $cart = $this->helper->getCart($userId, $sessionId);
 
         try {
             $cart->removeItem($request->cartitem_id);
